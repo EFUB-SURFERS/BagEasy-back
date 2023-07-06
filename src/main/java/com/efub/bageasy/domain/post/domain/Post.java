@@ -33,4 +33,7 @@ public class Post extends BaseTimeEntity {
 
     @Column(name = "member_id", nullable = false)
     private Long memberId;
+
+    @Column(name = "buyer_id")
+    private Long buyerId;
 }
