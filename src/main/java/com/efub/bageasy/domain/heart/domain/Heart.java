@@ -13,11 +13,12 @@ import javax.persistence.*;
 public class Heart extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long likeId;
 
-    @Column(nullable = false)
+    @Column(name = "member_id", nullable = false)
     private Long memberId;
 
-    @Column(nullable = false)
+    @Column(name = "post_id", nullable = false)
     private Long postId;
 }

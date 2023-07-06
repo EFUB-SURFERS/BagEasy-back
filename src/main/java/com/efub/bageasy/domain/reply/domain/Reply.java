@@ -13,15 +13,19 @@ import javax.persistence.*;
 public class Reply extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long replyId;
 
-    @Column(nullable = false)
+    @Column(name = "member_id", nullable = false)
+    private Long memberId;
+
+    @Column(name = "is_secret", nullable = false)
     private Boolean isSecret;
 
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(name = "comment_id", nullable = false)
     private Long commentId;
 }
 

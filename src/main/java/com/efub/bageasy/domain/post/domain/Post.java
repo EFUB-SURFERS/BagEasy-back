@@ -13,6 +13,7 @@ import javax.persistence.*;
 public class Post extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long postId;
 
     @Column(nullable = false)
@@ -21,15 +22,15 @@ public class Post extends BaseTimeEntity {
     @Column
     private String content;
 
-    @Column(nullable = false)
+    @Column(name = "is_sold", nullable = false)
     private Boolean isSold;
 
     @Column
     private Long price;
 
-    @Column(nullable = false)
+    @Column(name = "school_id", nullable = false)
     private Long schoolId;
 
-    @Column(nullable = false)
+    @Column(name = "member_id", nullable = false)
     private Long memberId;
 }

@@ -12,6 +12,7 @@ import javax.persistence.*;
 public class School {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long schoolId;
 
     @Column(nullable = false)

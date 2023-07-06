@@ -1,4 +1,4 @@
-package com.efub.bageasy.domain.image;
+package com.efub.bageasy.domain.image.domain;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,11 +12,12 @@ import javax.persistence.*;
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long imageId;
 
-    @Column(nullable = false)
+    @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
-    @Column(nullable = false)
+    @Column(name = "post_id", nullable = false)
     private Long postId;
 }
