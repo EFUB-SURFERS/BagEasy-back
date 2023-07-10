@@ -2,13 +2,14 @@ package com.efub.bageasy.domain.member.domain;
 
 import com.efub.bageasy.global.BaseTimeEntity;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Member extends BaseTimeEntity {
     @Id
@@ -24,4 +25,20 @@ public class Member extends BaseTimeEntity {
 
     @Column(name = "school_id")
     private Long schoolId;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Builder
+    public Member(String email, String nickname, Long schoolId, Role role){
+        this.email = email;
+        this.nickname = nickname;
+        this.schoolId = schoolId;
+        this.role = role;
+    }
+
+    public Member updateNickname(String nickname){
+        this.nickname = nickname;
+        return this;
+    }
 }
