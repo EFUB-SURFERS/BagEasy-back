@@ -1,6 +1,7 @@
 package com.efub.bageasy.global.config;
 
-import com.efub.bageasy.domain.member.auth.JwtTokenProvider;
+
+import com.efub.bageasy.domain.member.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

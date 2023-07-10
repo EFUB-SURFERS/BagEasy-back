@@ -26,15 +26,11 @@ public class Member extends BaseTimeEntity {
     @Column(name = "school_id")
     private Long schoolId;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
     @Builder
-    public Member(String email, String nickname, Long schoolId, Role role){
+    public Member(String email, String nickname, Long schoolId){
         this.email = email;
         this.nickname = nickname;
         this.schoolId = schoolId;
-        this.role = role;
     }
 
     public Member updateNickname(String nickname){

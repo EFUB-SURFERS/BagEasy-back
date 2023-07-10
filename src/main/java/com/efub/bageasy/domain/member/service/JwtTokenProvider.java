@@ -1,7 +1,7 @@
-package com.efub.bageasy.domain.member.auth;
+package com.efub.bageasy.domain.member.service;
+
 
 import com.efub.bageasy.domain.member.domain.Member;
-import com.efub.bageasy.domain.member.domain.Role;
 import com.efub.bageasy.domain.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -29,6 +29,7 @@ public class JwtTokenProvider {
     private String secretKey;
 
     private Long tokenValidTime = 240 * 60 * 1000L;
+    private long refreshTokenValidTime = 1000L * 60 * 60 * 24 * 7; // 7일
 
     @PostConstruct
     protected void init() {
@@ -36,7 +37,7 @@ public class JwtTokenProvider {
     }
 
     //JWT 토큰 생성
-    public String createToken(String email, Role role) {
+    public String createToken(String email) {
 
         //payload 설정
         //registered claims
@@ -48,12 +49,22 @@ public class JwtTokenProvider {
 
         //private claims
         claims.put("email", email); // 정보는 key - value 쌍으로 저장.
-        claims.put("role", role);
 
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT") //헤더
                 .setClaims(claims) // 페이로드
+                .setExpiration(new Date(now.getTime() + tokenValidTime))
                 .signWith(SignatureAlgorithm.HS256, secretKey)  // 서명. 사용할 암호화 알고리즘과 signature 에 들어갈 secretKey 세팅
+                .compact();
+    }
+
+    public String createRefreshToken() {
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + refreshTokenValidTime))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 

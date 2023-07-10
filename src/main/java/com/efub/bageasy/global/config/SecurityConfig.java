@@ -1,8 +1,6 @@
 package com.efub.bageasy.global.config;
 
-import com.efub.bageasy.domain.member.auth.JwtTokenProvider;
-import com.efub.bageasy.domain.member.auth.OAuth2SuccessHandler;
-import com.efub.bageasy.domain.member.service.CustomOAuth2UserService;
+import com.efub.bageasy.domain.member.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -20,8 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
-    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -39,14 +35,8 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeRequests()
-                .antMatchers("/members/**", "/login/oauth2/code/google").permitAll()
-                .anyRequest().permitAll();
-
-        http.oauth2Login()
-                .userInfoEndpoint()
-                .userService(customOAuth2UserService)
-                .and()
-                .successHandler(oAuth2SuccessHandler)
+                .antMatchers("/members/**", "/login/oauth2/code/google", "/social/**").permitAll()
+                .anyRequest().permitAll()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
