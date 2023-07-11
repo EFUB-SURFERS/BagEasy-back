@@ -1,11 +1,18 @@
 package com.efub.bageasy.domain.member.controller;
 
+import com.efub.bageasy.domain.member.dto.LoginResponse;
 import com.efub.bageasy.domain.member.dto.LoginResponseDto;
+import com.efub.bageasy.domain.member.dto.MemberInfoDto;
+import com.efub.bageasy.domain.member.dto.SocialLoginRequest;
 import com.efub.bageasy.domain.member.service.MemberService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.IOException;
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,4 +45,15 @@ public class MemberController {
 
         return memberService.googleLogin(code);
     }
+
+    @PostMapping("/social-login")
+    public ResponseEntity<LoginResponse> doSocialLogin(@RequestBody @Valid SocialLoginRequest request) throws JsonProcessingException {
+
+        return ResponseEntity.created(URI.create("/social-login"))
+                .body(memberService.doSocialLogin(request));
+    }
+
+
+
+
 }

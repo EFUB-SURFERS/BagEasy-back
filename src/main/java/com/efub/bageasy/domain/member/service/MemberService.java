@@ -1,13 +1,18 @@
 package com.efub.bageasy.domain.member.service;
 
 import com.efub.bageasy.domain.member.domain.Member;
-import com.efub.bageasy.domain.member.dto.LoginResponseDto;
+import com.efub.bageasy.domain.member.dto.*;
+import com.efub.bageasy.domain.member.oauth.GoogleAuthApi;
 import com.efub.bageasy.domain.member.oauth.GoogleOAuthToken;
 import com.efub.bageasy.domain.member.oauth.GoogleUser;
+import com.efub.bageasy.domain.member.oauth.GoogleUserApi;
 import com.efub.bageasy.domain.member.repository.MemberRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,10 +33,14 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
     private final HttpServletResponse response;
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
+
+    private final GoogleAuthApi googleAuthApi;
+    private final GoogleUserApi googleUserApi;
 
     @Value("${spring.OAuth2.google.url.login}")
     private String GOOGLE_SNS_LOGIN_URL;
@@ -75,6 +84,28 @@ public class MemberService {
         String accessToken = jwtTokenProvider.createToken(member.getEmail());
         //액세스 토큰과 jwtToken, 이외 정보들이 담긴 자바 객체를 다시 전송한다.
         return new LoginResponseDto(member, accessToken);
+
+    }
+
+    public SocialAuthResponse getAccessToken2(String code) {
+        ResponseEntity<?> response = googleAuthApi.getAccessToken(
+                GoogleRequestAccessTokenDto.builder()
+                        .code(code)
+                        .client_id(GOOGLE_SNS_CLIENT_ID)
+                        .clientSecret(GOOGLE_SNS_CLIENT_SECRET)
+                        .redirect_uri("http://localhost:8080/google-login")
+                        .grant_type("authorization_code")
+                        .build()
+        );
+
+        log.info("google auth info");
+        log.info(response.toString());
+
+        return new Gson()
+                .fromJson(
+                        response.getBody().toString(),
+                        SocialAuthResponse.class
+                );
     }
 
     public String getOauthRedirectURL() {
@@ -139,6 +170,26 @@ public class MemberService {
         return googleUser;
     }
 
+    public GoogleLoginResponse getUserInfo2(String accessToken) throws JsonProcessingException {
+        ResponseEntity<?> response = googleUserApi.getUserInfo(accessToken);
+
+        log.info("google user response");
+        log.info(response.toString());
+
+        String jsonString = response.getBody().toString();
+
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+//                .registerTypeAdapter(LocalDateTime.class, new GsonLocalDateTimeAdapter())
+                .create();
+
+
+        GoogleLoginResponse googleLoginResponse = gson.fromJson(jsonString, GoogleLoginResponse.class);
+
+        return googleLoginResponse;
+    }
+
+
     public Member saveMember(@RequestBody GoogleUser googleUser) {
         Member member = memberRepository.findByEmail(googleUser.getEmail());
         if (member == null) {
@@ -151,4 +202,30 @@ public class MemberService {
         return member;
     }
 
+    public LoginResponse doSocialLogin(SocialLoginRequest request) throws JsonProcessingException {
+
+        SocialAuthResponse socialAuthResponse = getAccessToken2(request.getCode());
+
+        GoogleLoginResponse googleLoginResponse = getUserInfo2(socialAuthResponse.getAccess_token());
+        log.info("socialUserResponse {} ", googleLoginResponse.toString());
+//
+//        if (memberRepository.findByEmail(socialUserResponse.getId())==null) {
+//            this.saveMember(
+//                    UserJoinRequest.builder()
+//                            .userId(socialUserResponse.getId())
+//                            .userEmail(socialUserResponse.getEmail())
+//                            .userName(socialUserResponse.getName())
+//                            .userType(request.getUserType())
+//                            .build()
+//            );
+//        }
+//
+//        User user = userRepository.findByUserId(socialUserResponse.getId())
+//                .orElseThrow(() -> new NotFoundException("ERROR_001", "유저 정보를 찾을 수 없습니다."));
+
+        return LoginResponse.builder()
+                .email(googleLoginResponse.getEmail())
+                .picture(googleLoginResponse.getPicture())
+                .build();
+    }
 }
