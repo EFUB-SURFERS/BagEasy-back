@@ -52,7 +52,6 @@ public class JwtTokenProvider {
         claims.put("email", email); // 정보는 key - value 쌍으로 저장.
 
         return Jwts.builder()
-                .setHeaderParam("typ", "JWT") //헤더
                 .setClaims(claims) // 페이로드
                 .setExpiration(new Date(now.getTime() + tokenValidTime))
                 .signWith(SignatureAlgorithm.HS256, secretKey)  // 서명. 사용할 암호화 알고리즘과 signature 에 들어갈 secretKey 세팅
@@ -78,9 +77,9 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(member, "");
     }
 
-    // Request의 Header에서 token 값을 가져오기
+    // Request의 Header에서 token 값을 가져오기 "Authorization" : "TOKEN값"
     public String resolveToken(HttpServletRequest request) {
-        return request.getHeader("JWT");
+        return request.getHeader("Authorization");
     }
 
     // 토큰의 유효성 + 만료일자 확인  // -> 토큰이 expire되지 않았는지 True/False로 반환해줌.
@@ -94,18 +93,18 @@ public class JwtTokenProvider {
         }
     }
 
-    public MemberInfoDto getMemberInfoByRequest(HttpServletRequest request){
-        String token = resolveToken(request);
-        if(validateToken(token)){
-            String email = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().get("email", String.class);
-            Member member = memberRepository.findByEmail(email);
-
-            log.info("found member : "+ member);
-
-            return new MemberInfoDto(member);
-        }
-        else{
-            return null;
-        }
-    }
+//    public MemberInfoDto getMemberInfoByRequest(HttpServletRequest request){
+//        String token = resolveToken(request);
+//        if(validateToken(token)){
+//            String email = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().get("email", String.class);
+//            Member member = memberRepository.findByEmail(email);
+//
+//            log.info("found member : "+ member);
+//
+//            return new MemberInfoDto(member);
+//        }
+//        else{
+//            return null;
+//        }
+//    }
 }

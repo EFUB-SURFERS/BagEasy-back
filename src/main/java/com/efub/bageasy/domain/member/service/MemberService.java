@@ -13,12 +13,14 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
@@ -92,12 +94,20 @@ public class MemberService {
         //다시 JSON 형식의 응답 객체를 자바 객체로 역직렬화한다.
         GoogleUser googleUser = getUserInfo(oAuthToken);
 
-        Member member = saveMember(googleUser);
+        String email = googleUser.getEmail();
+        Member member = findMemberByEmail(email);
+        Boolean isExistingMember = true;
 
-        //서버에 member가 존재하면 앞으로 회원 인가 처리를 위한 jwtToken을 발급한다.
+        //가입 처리
+        if (member == null) {
+            member = saveMember(googleUser);
+            isExistingMember = false;
+        }
+
+        //앞으로 회원 인가 처리를 위한 jwtToken을 발급한다.
         String accessToken = jwtTokenProvider.createToken(member.getEmail());
-        //액세스 토큰과 jwtToken, 이외 정보들이 담긴 자바 객체를 다시 전송한다.
-        return new LoginResponseDto(member, accessToken);
+
+        return new LoginResponseDto(member, accessToken, isExistingMember);
     }
 
     //일회용 코드를 다시 구글로 보내 액세스 토큰을 포함한 JSON String이 담긴 ResponseEntity를 받아온다.
@@ -140,17 +150,25 @@ public class MemberService {
     }
 
     public Member saveMember(@RequestBody GoogleUser googleUser) {
-        Member member = memberRepository.findByEmail(googleUser.getEmail());
-        if (member == null) {
-            member = Member.builder()
-                    .email(googleUser.getEmail())
-                    .nickname(googleUser.getName())
-                    .build();
-            memberRepository.save(member);
-        }
-        return member;
+        return memberRepository.save(
+                Member.builder()
+                        .email(googleUser.getEmail())
+                        .nickname(googleUser.getName())
+                        .build()
+        );
     }
 
+    public Member findMemberByEmail(String email) {
+        return memberRepository.findByEmail(email);
+    }
 
+    public Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다. id = " + memberId));
+    }
 
+    public Member findMemberByAuth() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return findMemberByEmail(email);
+    }
 }

@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeRequests()
-                .antMatchers("/members/**", "/login/oauth2/code/google", "/social/**").permitAll()
+                .antMatchers("/members/auth/google/**", "/login/oauth2/code/google", "/posts/**", "/comments/**", "/replies/**").permitAll()
                 .anyRequest().permitAll()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);

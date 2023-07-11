@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 public class LoginResponseDto {
 
+    private Boolean isExistingMember;
     private Long memberId;
     private String email;
     private String nickname;
@@ -15,7 +16,8 @@ public class LoginResponseDto {
     //private String refreshToken;
 
     @Builder
-    public LoginResponseDto(Member member, String accessToken){
+    public LoginResponseDto(Member member, String accessToken, Boolean isExistingMember){
+        this.isExistingMember = isExistingMember;
         this.memberId = member.getMemberId();
         this.email = member.getEmail();
         this.nickname = member.getNickname();
