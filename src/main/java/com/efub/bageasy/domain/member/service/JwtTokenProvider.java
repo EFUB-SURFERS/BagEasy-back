@@ -2,6 +2,7 @@ package com.efub.bageasy.domain.member.service;
 
 
 import com.efub.bageasy.domain.member.domain.Member;
+import com.efub.bageasy.domain.member.dto.MemberInfoDto;
 import com.efub.bageasy.domain.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -90,6 +91,22 @@ public class JwtTokenProvider {
             return !claims.getExpiration().before(new Date());
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public MemberInfoDto getMemberInfoByRequest(HttpServletRequest request){
+        String token = resolveToken(request);
+        if(validateToken(token)){
+            String email = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("email", String.class);
+            Member member = memberRepository.findByEmail(email);
+
+            log.info("found member : "+ member);
+
+            return new MemberInfoDto(member);
+        }
+        else{
+            log.info("not validateToken");
+            return null;
         }
     }
 }

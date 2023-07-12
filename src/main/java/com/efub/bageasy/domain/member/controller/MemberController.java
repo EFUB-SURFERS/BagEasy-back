@@ -1,15 +1,15 @@
 package com.efub.bageasy.domain.member.controller;
 
-import com.efub.bageasy.domain.member.dto.LoginResponse;
-import com.efub.bageasy.domain.member.dto.LoginResponseDto;
-import com.efub.bageasy.domain.member.dto.MemberInfoDto;
-import com.efub.bageasy.domain.member.dto.SocialLoginRequest;
+import com.efub.bageasy.domain.member.domain.Member;
+import com.efub.bageasy.domain.member.dto.*;
+import com.efub.bageasy.domain.member.service.JwtTokenProvider;
 import com.efub.bageasy.domain.member.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
@@ -19,6 +19,7 @@ import java.net.URI;
 @RequestMapping("/members")
 public class MemberController {
     private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     /*
      * 유저 소셜 로그인으로 리다이렉트 해주는 url
@@ -51,6 +52,16 @@ public class MemberController {
 
         return ResponseEntity.created(URI.create("/social-login"))
                 .body(memberService.doSocialLogin(request));
+    }
+
+    @PutMapping("/profile/nickname")
+    public MemberInfoDto nicknameCreate(@RequestBody NicknameRequestDto requestDto, HttpServletRequest httpServletRequest){
+        MemberInfoDto memberInfoDto = jwtTokenProvider.getMemberInfoByRequest(httpServletRequest);
+        //Member member = memberService.findMemberByAuth();
+        Long memberId = memberInfoDto.getMemberId();
+        System.out.println("memberId = "+memberId);
+        Member member = memberService.findMemberById(memberId);
+        return new MemberInfoDto(member.updateNickname(requestDto.getNickname()));
     }
 
 
