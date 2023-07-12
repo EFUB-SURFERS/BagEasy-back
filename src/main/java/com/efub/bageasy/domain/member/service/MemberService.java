@@ -7,6 +7,8 @@ import com.efub.bageasy.domain.member.oauth.GoogleOAuthToken;
 import com.efub.bageasy.domain.member.oauth.GoogleUser;
 import com.efub.bageasy.domain.member.oauth.GoogleUserApi;
 import com.efub.bageasy.domain.member.repository.MemberRepository;
+import com.efub.bageasy.global.exception.CustomException;
+import com.efub.bageasy.global.exception.ErrorCode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -18,6 +20,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
@@ -80,19 +84,25 @@ public class MemberService {
         GoogleUser googleUser = getUserInfo(oAuthToken);
 
         String email = googleUser.getEmail();
-        Member member = findMemberByEmail(email);
-        Boolean isExistingMember = true;
+        boolean isExistingMember = checkJoined(email);
 
         //가입 처리
-        if (member == null) {
+        Member member = null;
+        if (!isExistingMember) {
             member = saveMember(googleUser);
-            isExistingMember = false;
+        }else{
+            member = memberRepository.findByEmail(email).get();
         }
 
         //앞으로 회원 인가 처리를 위한 jwtToken을 발급한다.
         String accessToken = jwtTokenProvider.createToken(member.getEmail());
 
         return new LoginResponseDto(member, accessToken, isExistingMember);
+    }
+
+    public boolean checkJoined(String email){
+        boolean isJoined = memberRepository.existsMemberByEmail(email);
+        return isJoined;
     }
 
     public SocialAuthResponse getAccessToken2(String code) {
@@ -199,14 +209,11 @@ public class MemberService {
 
 
     public Member saveMember(@RequestBody GoogleUser googleUser) {
-        Member member = memberRepository.findByEmail(googleUser.getEmail());
-        if (member == null) {
-            member = Member.builder()
+        Member member = Member.builder()
                     .email(googleUser.getEmail())
                     .nickname(googleUser.getName())
                     .build();
-            memberRepository.save(member);
-        }
+        memberRepository.save(member);
         return member;
     }
 
@@ -237,12 +244,19 @@ public class MemberService {
                 .build();
     }
 
-    public Member findMemberByEmail(String email) {
-        return memberRepository.findByEmail(email);
-    }
 
     public Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다. id = " + memberId));
     }
+
+//    public Member findMemberByAuth(){
+//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        UserDetails userDetails = (UserDetails)principal;
+//
+//        String email = principal.get
+//        log.info("Authentication에서 얻은 이메일 : " + email);
+//        Member member =  memberRepository.findByEmail(email).get();
+//        return member;
+//    }
 }
