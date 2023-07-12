@@ -138,7 +138,7 @@ public class MemberService {
         params.put("code", code);
         params.put("client_id", GOOGLE_SNS_CLIENT_ID);
         params.put("client_secret", GOOGLE_SNS_CLIENT_SECRET);
-        params.put("redirect_uri", GOOGLE_SNS_CALLBACK_URL);
+        params.put("redirect_uri", "http://localhost:8080/google-login");
         params.put("grant_type", "authorization_code");
 
         RestTemplate restTemplate = new RestTemplate();
