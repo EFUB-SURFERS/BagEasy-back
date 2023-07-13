@@ -1,7 +1,12 @@
 package com.efub.bageasy.domain.member.domain;
 
 import com.efub.bageasy.global.BaseTimeEntity;
-import lombok.*;
+
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 
 import javax.persistence.*;
 

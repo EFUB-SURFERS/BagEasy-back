@@ -4,10 +4,10 @@ import com.efub.bageasy.domain.member.domain.Member;
 import lombok.Builder;
 import lombok.Getter;
 
-//클라이언트로 보낼 member 정보, accessToken 등이 담긴 객체
 @Getter
 public class LoginResponseDto {
 
+    // DB에 있는 멤버인지
     private Boolean isExistingMember;
     private Long memberId;
     private String email;

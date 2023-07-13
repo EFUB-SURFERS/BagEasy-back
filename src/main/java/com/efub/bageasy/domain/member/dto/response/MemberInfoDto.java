@@ -19,3 +19,4 @@ public class MemberInfoDto {
         this.schoolId = member.getSchoolId();
     }
 }
+

@@ -5,24 +5,25 @@ import com.efub.bageasy.domain.member.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RequiredArgsConstructor
-public class JwtAuthenticationFilter extends GenericFilterBean {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
 
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 헤더에서 JWT 를 받아옵니다.
-        String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
+        String token = jwtTokenProvider.resolveToken(request);
 
         // 유효한 토큰인지 확인합니다. 유효성검사
         if (token != null && jwtTokenProvider.validateToken(token)) {
@@ -33,7 +34,9 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         //UsernamePasswordAuthenticationFilter로 이동
-        chain.doFilter(request, response);
+        filterChain.doFilter(request, response);
     }
+
+
 }
 

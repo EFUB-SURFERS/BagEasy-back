@@ -1,42 +1,40 @@
 package com.efub.bageasy.domain.member.service;
 
 import com.efub.bageasy.domain.member.domain.Member;
+import com.efub.bageasy.domain.member.dto.request.NicknameRequestDto;
 import com.efub.bageasy.domain.member.dto.response.LoginResponseDto;
 import com.efub.bageasy.domain.member.oauth.GoogleOAuthToken;
 import com.efub.bageasy.domain.member.oauth.GoogleUser;
 import com.efub.bageasy.domain.member.repository.MemberRepository;
+import com.efub.bageasy.global.exception.CustomException;
+import com.efub.bageasy.global.exception.ErrorCode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
-
-import javax.persistence.EntityNotFoundException;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
+
 
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
-    private final HttpServletResponse response;
+
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
-
-    @Value("${spring.OAuth2.google.url.login}")
-    private String GOOGLE_SNS_LOGIN_URL;
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String GOOGLE_SNS_CLIENT_ID;
@@ -47,42 +45,37 @@ public class MemberService {
     @Value("${spring.security.oauth2.client.registration.google.client-secret}")
     private String GOOGLE_SNS_CLIENT_SECRET;
 
-    //@Value("${spring.security.oauth2.client.registration.google.scope}")
-    private String GOOGLE_DATA_ACCESS_SCOPE = "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";
-
     @Value("${spring.OAuth2.google.url.token}")
     private String GOOGLE_TOKEN_REQUEST_URL;
 
     @Value("${spring.OAuth2.google.url.profile}")
     private String GOOGLE_USERINFO_REQUEST_URL;
 
-
-    public void request() throws IOException {
-        String redirectURL = getOauthRedirectURL();
-        response.sendRedirect(redirectURL);
+    public Member saveMember(@RequestBody GoogleUser googleUser) {
+        Member member = Member.builder()
+                .email(googleUser.getEmail())
+                .nickname(googleUser.getName())
+                .build();
+        memberRepository.save(member);
+        return member;
     }
 
-    public String getOauthRedirectURL() {
+    @Transactional(readOnly = true)
+    public Member findMemberByEmail(String email){
+        return memberRepository.findByEmail(email)
+                .orElseThrow(()->new CustomException(ErrorCode.NO_MEMBER_EXIST));
+    }
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("response_type", "code");
-        params.put("client_id", GOOGLE_SNS_CLIENT_ID);
-        params.put("redirect_uri", GOOGLE_SNS_CALLBACK_URL);
-        params.put("scope", GOOGLE_DATA_ACCESS_SCOPE);
+    @Transactional(readOnly = true)
+    public Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_MEMBER_EXIST));
+    }
 
-        //parameter를 형식에 맞춰 구성해주는 함수
-        String parameterString = params.entrySet().stream()
-                .map(x -> x.getKey() + "=" + x.getValue())
-                .collect(Collectors.joining("&"));
-        String redirectURL = GOOGLE_SNS_LOGIN_URL + "?" + parameterString;
-        System.out.println("redirectURL = " + redirectURL);
+    public Member updateMember(Member member, NicknameRequestDto requestDto){
+        //Member foundMember = findMemberById(member.getMemberId());
+        return member.updateNickname(requestDto.getNickname());
 
-        return redirectURL;
-        /*
-         * https://accounts.google.com/o/oauth2/v2/auth?scope=profile&response_type=code
-         * &client_id="할당받은 id"&redirect_uri="access token 처리")
-         * 로 Redirect URL을 생성하는 로직을 구성
-         * */
     }
 
     public LoginResponseDto googleLogin(String code) throws IOException {
@@ -95,13 +88,14 @@ public class MemberService {
         GoogleUser googleUser = getUserInfo(oAuthToken);
 
         String email = googleUser.getEmail();
-        Member member = findMemberByEmail(email);
-        Boolean isExistingMember = true;
+        boolean isExistingMember = checkJoined(email);
 
         //가입 처리
-        if (member == null) {
+        Member member = null;
+        if (!isExistingMember) {
             member = saveMember(googleUser);
-            isExistingMember = false;
+        }else{
+            member = findMemberByEmail(email);
         }
 
         //앞으로 회원 인가 처리를 위한 jwtToken을 발급한다.
@@ -109,6 +103,13 @@ public class MemberService {
 
         return new LoginResponseDto(member, accessToken, isExistingMember);
     }
+
+
+    public boolean checkJoined(String email){
+        boolean isJoined = memberRepository.existsMemberByEmail(email);
+        return isJoined;
+    }
+
 
     //일회용 코드를 다시 구글로 보내 액세스 토큰을 포함한 JSON String이 담긴 ResponseEntity를 받아온다.
     public GoogleOAuthToken getAccessToken(String code) throws JsonProcessingException {
@@ -149,26 +150,5 @@ public class MemberService {
         return googleUser;
     }
 
-    public Member saveMember(@RequestBody GoogleUser googleUser) {
-        return memberRepository.save(
-                Member.builder()
-                        .email(googleUser.getEmail())
-                        .nickname(googleUser.getName())
-                        .build()
-        );
-    }
 
-    public Member findMemberByEmail(String email) {
-        return memberRepository.findByEmail(email);
-    }
-
-    public Member findMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 사용자를 찾을 수 없습니다. id = " + memberId));
-    }
-
-    public Member findMemberByAuth() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return findMemberByEmail(email);
-    }
 }
