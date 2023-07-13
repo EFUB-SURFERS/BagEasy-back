@@ -1,4 +1,4 @@
-package com.efub.bageasy.domain.member.dto;
+package com.efub.bageasy.domain.member.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

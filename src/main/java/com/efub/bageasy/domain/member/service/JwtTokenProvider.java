@@ -2,7 +2,6 @@ package com.efub.bageasy.domain.member.service;
 
 
 import com.efub.bageasy.domain.member.domain.Member;
-import com.efub.bageasy.domain.member.dto.MemberInfoDto;
 import com.efub.bageasy.domain.member.repository.MemberRepository;
 import com.efub.bageasy.global.exception.CustomException;
 import com.efub.bageasy.global.exception.ErrorCode;
@@ -12,11 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
@@ -48,7 +45,6 @@ public class JwtTokenProvider {
 
 
         return Jwts.builder()
-//                .setHeaderParam("typ", "JWT") //헤더
                 .setClaims(claims) // 페이로드
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + tokenValidTime))
@@ -70,7 +66,7 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         try{
             String email = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject();
-            Member member = memberRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+            Member member = memberRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.NO_MEMBER_EXIST));
             return new UsernamePasswordAuthenticationToken(member, "");
         }catch (ExpiredJwtException e) {
             throw new CustomException(ErrorCode.EXPIRED_TOKEN);
@@ -84,7 +80,7 @@ public class JwtTokenProvider {
     // Request의 Header에서 token 값을 가져오기
     public String resolveToken(HttpServletRequest request) {
         String token= request.getHeader("Authorization");
-        log.info("resolved token:"+token);
+        log.info("resolved token: {}", token);
         return token;
     }
 
@@ -93,28 +89,11 @@ public class JwtTokenProvider {
         try {
             log.info("validateToken 들어옴");
             Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwtToken);
-            log.info("parsed token: " + claims);
+            log.info("parsed token: {}", claims);
 
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
             return false;
         }
     }
-
-
-//    public MemberInfoDto getMemberInfoByRequest(HttpServletRequest request){
-//        String token = resolveToken(request);
-//        if(validateToken(token)){
-//            String email = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().get("email", String.class);
-//            Member member = memberRepository.findByEmail(email).get();
-//
-//            log.info("found member : "+ member);
-//
-//            return new MemberInfoDto(member);
-//        }
-//        else{
-//            log.info("not validateToken");
-//            return null;
-//        }
-//    }
 }
