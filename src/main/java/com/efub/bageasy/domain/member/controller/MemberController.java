@@ -28,5 +28,7 @@ public class MemberController {
     @PutMapping("/members/profile/nickname")
     public MemberInfoDto nicknameUpdate(@RequestBody NicknameRequestDto requestDto, @AuthUser Member member){
         return new MemberInfoDto(memberService.updateMember(member, requestDto));   //트랜잭션
+
+
     }
 }

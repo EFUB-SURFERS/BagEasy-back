@@ -13,10 +13,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
+
 
 @Service
 @RequiredArgsConstructor
@@ -96,4 +98,5 @@ public class JwtTokenProvider {
             return false;
         }
     }
+
 }

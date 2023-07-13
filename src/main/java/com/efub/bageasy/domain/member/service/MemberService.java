@@ -22,10 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 
 @Service
 @Transactional
@@ -75,6 +75,7 @@ public class MemberService {
     public Member updateMember(Member member, NicknameRequestDto requestDto){
         //Member foundMember = findMemberById(member.getMemberId());
         return member.updateNickname(requestDto.getNickname());
+
     }
 
     public LoginResponseDto googleLogin(String code) throws IOException {
@@ -103,10 +104,12 @@ public class MemberService {
         return new LoginResponseDto(member, accessToken, isExistingMember);
     }
 
+
     public boolean checkJoined(String email){
         boolean isJoined = memberRepository.existsMemberByEmail(email);
         return isJoined;
     }
+
 
     //일회용 코드를 다시 구글로 보내 액세스 토큰을 포함한 JSON String이 담긴 ResponseEntity를 받아온다.
     public GoogleOAuthToken getAccessToken(String code) throws JsonProcessingException {
@@ -146,4 +149,6 @@ public class MemberService {
         GoogleUser googleUser = objectMapper.readValue(response.getBody(), GoogleUser.class);
         return googleUser;
     }
+
+
 }
