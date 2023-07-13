@@ -1,4 +1,3 @@
-
 package com.efub.bageasy.domain.member.repository;
 
 import com.efub.bageasy.domain.member.domain.Member;
