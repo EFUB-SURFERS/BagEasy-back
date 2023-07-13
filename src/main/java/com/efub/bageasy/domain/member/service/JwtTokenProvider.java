@@ -81,9 +81,7 @@ public class JwtTokenProvider {
 
     // Request의 Header에서 token 값을 가져오기
     public String resolveToken(HttpServletRequest request) {
-        String token= request.getHeader("Authorization");
-        log.info("resolved token: {}", token);
-        return token;
+        return request.getHeader("Authorization");
     }
 
     // 토큰의 유효성 + 만료일자 확인  // -> 토큰이 expire되지 않았는지 True/False로 반환해줌.
@@ -91,7 +89,6 @@ public class JwtTokenProvider {
         try {
             log.info("validateToken 들어옴");
             Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(jwtToken);
-            log.info("parsed token: {}", claims);
 
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {

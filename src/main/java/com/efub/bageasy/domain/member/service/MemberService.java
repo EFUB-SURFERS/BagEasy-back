@@ -73,9 +73,7 @@ public class MemberService {
     }
 
     public Member updateMember(Member member, NicknameRequestDto requestDto){
-        //Member foundMember = findMemberById(member.getMemberId());
         return member.updateNickname(requestDto.getNickname());
-
     }
 
     public LoginResponseDto googleLogin(String code) throws IOException {
@@ -91,7 +89,7 @@ public class MemberService {
         boolean isExistingMember = checkJoined(email);
 
         //가입 처리
-        Member member = null;
+        Member member;
         if (!isExistingMember) {
             member = saveMember(googleUser);
         }else{
