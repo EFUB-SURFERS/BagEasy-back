@@ -34,4 +34,9 @@ public class Member extends BaseTimeEntity {
         this.nickname = nickname;
         return this;
     }
+
+    public Member updateSchool(String school){
+        this.school = school;
+        return this;
+    }
 }

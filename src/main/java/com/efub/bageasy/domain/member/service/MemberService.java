@@ -2,6 +2,7 @@ package com.efub.bageasy.domain.member.service;
 
 import com.efub.bageasy.domain.member.domain.Member;
 import com.efub.bageasy.domain.member.dto.request.NicknameRequestDto;
+import com.efub.bageasy.domain.member.dto.request.SchoolRequestDto;
 import com.efub.bageasy.domain.member.dto.response.LoginResponseDto;
 import com.efub.bageasy.domain.member.oauth.GoogleOAuthToken;
 import com.efub.bageasy.domain.member.oauth.GoogleUser;
@@ -74,6 +75,10 @@ public class MemberService {
 
     public Member updateMember(Member member, NicknameRequestDto requestDto){
         return member.updateNickname(requestDto.getNickname());
+    }
+
+    public Member updateSchool(SchoolRequestDto requestDto, Member member){
+        return member.updateSchool(requestDto.getSchool());
     }
 
     public LoginResponseDto googleLogin(String code) throws IOException {
