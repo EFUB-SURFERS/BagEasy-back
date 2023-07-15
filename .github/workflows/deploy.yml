@@ -60,6 +60,5 @@ jobs:
           script: |
             sudo docker rm -f $(docker ps -qa)
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/bageasy
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/bageasy-nginx
-            docker-compose up -d
+            sudo docker run -d --log-driver=syslog -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/bageasy
             docker image prune -f
