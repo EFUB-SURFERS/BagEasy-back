@@ -35,4 +35,9 @@ public class MemberController {
     public MemberInfoDto schoolUpdate(@RequestBody SchoolRequestDto requestDto, @AuthUser Member member){
         return new MemberInfoDto(memberService.updateSchool(requestDto, member));
     }
+
+    @GetMapping("/members/me")
+    public MemberInfoDto profileGet(@AuthUser Member member){
+        return new MemberInfoDto(member);
+    }
 }
