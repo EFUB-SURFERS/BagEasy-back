@@ -73,7 +73,7 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NO_MEMBER_EXIST));
     }
 
-    public Member updateMember(Member member, NicknameRequestDto requestDto){
+    public Member updateNickname(NicknameRequestDto requestDto, Member member){
         return member.updateNickname(requestDto.getNickname());
     }
 

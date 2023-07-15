@@ -26,9 +26,9 @@ public class MemberController {
         return memberService.googleLogin(requestDto.getCode());
     }
 
-    @PutMapping("/members/profile/nickname")
+    @PutMapping("/members/nickname")
     public MemberInfoDto nicknameUpdate(@RequestBody NicknameRequestDto requestDto, @AuthUser Member member){
-        return new MemberInfoDto(memberService.updateMember(member, requestDto));   //트랜잭션
+        return new MemberInfoDto(memberService.updateNickname(requestDto, member));   //트랜잭션
     }
 
     @PutMapping("/members/school")
