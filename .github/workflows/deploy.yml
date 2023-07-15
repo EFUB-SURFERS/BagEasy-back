@@ -59,6 +59,8 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             sudo docker rm -f $(docker ps -qa)
+            sudo docker stop $(docker ps -a -q)
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/bageasy
-            sudo docker run -d --log-driver=syslog -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/bageasy
+            sudo docker run -d --log-driver=syslog -p 80:8080 ${{ secrets.DOCKER_USERNAME }}/bageasy
+            sudo docker rm $(docker ps --filter 'status=exited' -a -q)
             docker image prune -f
