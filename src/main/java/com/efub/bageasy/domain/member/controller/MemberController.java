@@ -40,4 +40,9 @@ public class MemberController {
     public MemberInfoDto profileGet(@AuthUser Member member){
         return new MemberInfoDto(member);
     }
+
+    @GetMapping("/members/{memberId}")
+    public MemberInfoDto memberFind(@PathVariable Long memberId){
+        return new MemberInfoDto(memberService.findMemberById(memberId));
+    }
 }
