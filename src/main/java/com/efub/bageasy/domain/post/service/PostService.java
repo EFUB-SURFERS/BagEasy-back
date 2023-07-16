@@ -37,10 +37,9 @@ public class PostService {
         String content = requestDto.getPostContent();
         Long price = requestDto.getPrice();
         Long memberId=member.getMemberId();
-        //Long memberId = requestDto.getSellerId();
+        Long schoolId = member.getSchoolId();
 
-
-        Post post = new Post(title,content,price,memberId);
+        Post post = new Post(title,content,price,memberId,schoolId);
         postRepository.save(post);
 
         List<String> imgList = new ArrayList<>();

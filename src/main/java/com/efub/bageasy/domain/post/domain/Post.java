@@ -41,12 +41,6 @@ public class Post extends BaseTimeEntity {
     @Column(name = "buyer_id")
     private Long buyerId;
 
-    // 이미지
-    /*
-    @OneToMany(mappedBy = "post",cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<Image> images;
-     */
-
     @Transient
     private final List<Image> imageList = new ArrayList<>();
 
@@ -61,16 +55,15 @@ public class Post extends BaseTimeEntity {
         this.schoolId=schoolId;
         this.memberId=memberId;
         this.buyerId=buyerId;
-        //addImages(images);
     }
 
-    public Post(String title, String content, Long price, Long memberId){
+    public Post(String title, String content, Long price, Long memberId,Long schoolId){
         this.title=title;
         this.content=content;
         this.price=price;
         this.memberId=memberId;
         this.isSold=false;
-        this.schoolId= 1L;
+        this.schoolId= schoolId;
     }
 
     // 양도글 수정
@@ -80,7 +73,6 @@ public class Post extends BaseTimeEntity {
        this.price=requestDto.getPrice();
 
     }
-
 
     // 구매 확정
     public void updateIsSold(Long buyerId) {
