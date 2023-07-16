@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/members/{memberId}/posts")
+@RequestMapping("/members/posts")
 @RequiredArgsConstructor
 public class MemberPostController {
     private final MemberService memberService;
@@ -27,7 +27,6 @@ public class MemberPostController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<PostListResponseDto> getMemberPost(@AuthUser Member member, @PathVariable Long memberId){
-        //Member member = memberService.findMemberById(memberId);
         List<Post> postList = postService.findPostListBySellerId(member.getMemberId());
 
         List<PostListResponseDto> postListResponseDtoList = new ArrayList<>();
