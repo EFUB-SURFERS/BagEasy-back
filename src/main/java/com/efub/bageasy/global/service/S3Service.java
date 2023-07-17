@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.efub.bageasy.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.efub.bageasy.global.exception.ErrorCode.*;
 
 
 @Slf4j
@@ -41,13 +44,14 @@ public class S3Service {
     private String region;
 
     // MultipartFile을 전달받아 File로 전환한 후 S3에 업로드
-    public String upload(MultipartFile multipartFile, String dirName) throws IOException {
+    public String uploadFile(MultipartFile multipartFile, String dirName) throws IOException {
         File uploadFile = convert(multipartFile)
-                .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 전환 실패"));
-        return upload(uploadFile, dirName);
+                .orElseThrow(() -> new CustomException(FILE_CONVERT_ERROR);
+        return uploadS3(uploadFile, dirName);
     }
 
-    private String upload(File uploadFile, String dirName) {
+
+    private String uploadS3(File uploadFile, String dirName) {
         String fileName = dirName + "/" + uploadFile.getName();
         String uploadImageUrl = putS3(uploadFile, fileName);
 
@@ -55,6 +59,7 @@ public class S3Service {
 
         return uploadImageUrl;      // 업로드된 파일의 S3 URL 주소 반환
     }
+
 
     // 이미지 업로드
     public List<String> upload(List<MultipartFile> multipartFile) {
@@ -72,7 +77,7 @@ public class S3Service {
                         .withCannedAcl(CannedAccessControlList.PublicRead));
                 imgUrlList.add(amazonS3Client.getUrl(bucket+"/post/image", fileName).toString());
             } catch(IOException e) {
-                //throw new PrivateException();
+                throw new CustomException(FILE_UPLOAD_ERROR);
             }
         }
         return imgUrlList;
@@ -91,7 +96,7 @@ public class S3Service {
         try {
             amazonS3Client.deleteObject(bucket,"post/image/"+imageName);
         }catch (SdkClientException e){
-            throw new IOException("Error deleting image s3");
+            throw new CustomException(FILE_DELETE_ERROR);
         }
 
     }
@@ -158,7 +163,5 @@ public class S3Service {
     private String createFileName(String fileName) {
         return UUID.randomUUID().toString().concat(getFileExtension(fileName));
     }
-
-
 
 }
