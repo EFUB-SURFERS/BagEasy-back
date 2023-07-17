@@ -9,10 +9,12 @@ import com.efub.bageasy.domain.reply.dto.ReplyRequestDto;
 import com.efub.bageasy.domain.reply.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ReplyService {
     private final PostService postService;
@@ -39,12 +41,12 @@ public class ReplyService {
     // 대댓글 목록 조회
     public List<Reply> findReplyList(Long commentId) {
         Comment comment = commentService.findComment(commentId);
-        return replyRepository.findAllByCommentId(commentId);
+        return replyRepository.findAllByCommentIdOrderByCreatedAt(commentId);
     }
 
     //대댓글 삭제
     public void deleteReply(Member member, Long replyId) {
         Reply reply = findReply(replyId);
-        replyRepository.delete(reply);
+        if(reply.getMemberId() == member.getMemberId())  replyRepository.delete(reply);
     }
 }
