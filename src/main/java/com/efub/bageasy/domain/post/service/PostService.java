@@ -91,9 +91,10 @@ public class PostService {
         return postRepository.findAllByMemberId(memberId);
     }
 
-    public void updateIsSold(PostUpdateIsSoldRequestDto requestDto, Long postId) {
+    // 구매 확정
+    public void updateIsSold(PostUpdateIsSoldRequestDto requestDto, Long postId, Member member) {
         Post post = findPost(postId);
-        if(post.getMemberId() == member.getMemberId()) {
+        if(post.getMemberId()==member.getMemberId()){
             post.updateIsSold(requestDto.getBuyerId());
         }
     }
