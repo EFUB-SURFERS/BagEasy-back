@@ -4,11 +4,12 @@ import com.efub.bageasy.global.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Getter
 public class Reply extends BaseTimeEntity {
     @Id
@@ -27,5 +28,12 @@ public class Reply extends BaseTimeEntity {
 
     @Column(name = "comment_id", nullable = false)
     private Long commentId;
+
+    public Reply(Long commentId, Long memberId, String replyContent, Boolean isSecret){
+        this.commentId=commentId;
+        this.memberId=memberId;
+        this.content=replyContent;
+        this.isSecret=isSecret;
+    }
 }
 
