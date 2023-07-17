@@ -80,7 +80,7 @@ public class PostController {
                                             @PathVariable Long postId,
                                             @RequestBody @Valid PostUpdateIsSoldRequestDto requestDto){
 
-        postService.updateIsSold(requestDto,postId);
+        postService.updateIsSold(requestDto,postId,member);
         Post post = postService.findPost(postId);
         List<Image>imageList = imageService.findPostImage(post);
 
