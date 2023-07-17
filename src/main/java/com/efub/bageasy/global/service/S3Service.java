@@ -46,7 +46,7 @@ public class S3Service {
     // MultipartFile을 전달받아 File로 전환한 후 S3에 업로드
     public String uploadFile(MultipartFile multipartFile, String dirName) throws IOException {
         File uploadFile = convert(multipartFile)
-                .orElseThrow(() -> new CustomException(FILE_CONVERT_ERROR);
+                .orElseThrow(() -> new CustomException(FILE_CONVERT_ERROR));
         return uploadS3(uploadFile, dirName);
     }
 
