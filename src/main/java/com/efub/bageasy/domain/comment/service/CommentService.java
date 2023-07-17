@@ -35,15 +35,13 @@ public class CommentService {
     }
 
     public List<Comment> findCommentList(Long postId) {
-        return commentRepository.findAll();
+        return commentRepository.findAllByPostIdOrderByCreatedAt(postId);
     }
 
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long commentId, Member member) {
         Comment comment = findComment(commentId);
-        commentRepository.delete(comment);
-
-
+        if(comment.getMemberId() == member.getMemberId()) {
+            commentRepository.delete(comment);
+        }
     }
-
-
 }
