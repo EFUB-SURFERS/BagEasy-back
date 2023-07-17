@@ -93,7 +93,9 @@ public class PostService {
 
     public void updateIsSold(PostUpdateIsSoldRequestDto requestDto, Long postId) {
         Post post = findPost(postId);
-        post.updateIsSold(requestDto.getBuyerId());
+        if(post.getMemberId() == member.getMemberId()) {
+            post.updateIsSold(requestDto.getBuyerId());
+        }
     }
 
     public void deletePost(Member member, Long postId) {
