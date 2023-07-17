@@ -15,7 +15,11 @@ public enum ErrorCode {
 
     INVALID_ACCESS(HttpStatus.BAD_REQUEST,"올바르지 않은 접근입니다. 헤더를 확인해주세요."),
 
-    NO_MEMBER_EXIST(HttpStatus.BAD_REQUEST, "가입되지 않은 회원입니다.");
+    NO_MEMBER_EXIST(HttpStatus.BAD_REQUEST, "가입되지 않은 회원입니다."),
+
+    FILE_CONVERT_ERROR(HttpStatus.BAD_REQUEST,"파일 전환에 실패하였습니다."),
+    FILE_UPLOAD_ERROR(HttpStatus.BAD_REQUEST,"이미지 업로드에 실패하였습니다."),
+    FILE_DELETE_ERROR(HttpStatus.BAD_REQUEST,"이미지 삭제에 실패하였습니다.");
 
     private final HttpStatus status;
     private final String message;
