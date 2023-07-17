@@ -38,12 +38,10 @@ public class CommentService {
         return commentRepository.findAll();
     }
 
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long commentId, Member member) {
         Comment comment = findComment(commentId);
-        commentRepository.delete(comment);
-
-
+        if(comment.getMemberId() == member.getMemberId()) {
+            commentRepository.delete(comment);
+        }
     }
-
-
 }
