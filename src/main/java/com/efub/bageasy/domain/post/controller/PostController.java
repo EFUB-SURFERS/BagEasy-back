@@ -34,10 +34,6 @@ public class PostController {
             @RequestPart(value="dto") PostRequestDto requestDto,
             @RequestPart(value="image") List<MultipartFile> images) throws IOException {
 
-        if(images == null){
-            throw new IOException("이미지가 없습니다.");
-        }
-
         List<String> imgPaths = s3Service.upload(images);
 
         Post post = postService.addPost(member,requestDto,imgPaths);
