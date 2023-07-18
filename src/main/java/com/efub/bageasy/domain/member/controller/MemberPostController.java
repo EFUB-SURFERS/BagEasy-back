@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/members/posts")
 @RequiredArgsConstructor
 public class MemberPostController {
-    private final MemberService memberService;
+
     private final PostService postService;
     private final ImageService imageService;
 
@@ -40,4 +40,42 @@ public class MemberPostController {
         return postListResponseDtoList;
     }
 
+    // 구매내역
+    @GetMapping("/purchases")
+    @ResponseStatus(HttpStatus.OK)
+    public List<PostListResponseDto> purchaseList(@AuthUser Member member){
+        List<Post> purchases = postService.findPostListByBuyerId(member.getMemberId());
+
+        List<PostListResponseDto> postListResponseDtoList = new ArrayList<>();
+
+        for(Post post:purchases){
+            List<Image> images = imageService.findPostImage(post);
+
+            postListResponseDtoList.add(new PostListResponseDto(post,images));
+        }
+
+        return postListResponseDtoList;
+    }
+
+    // 판매내역
+    @GetMapping("/sales")
+    @ResponseStatus(HttpStatus.OK)
+    public List<PostListResponseDto> saleList(@AuthUser Member member){
+        List<Post> postList = postService.findPostListBySellerId(member.getMemberId());
+        List<Post> sales = new ArrayList<>();
+        for(Post post:postList){
+            if(post.getIsSold())
+                sales.add(post);
+        }
+
+        List<PostListResponseDto> postListResponseDtoList = new ArrayList<>();
+
+        for(Post post:sales){
+            List<Image> images = imageService.findPostImage(post);
+
+            postListResponseDtoList.add(new PostListResponseDto(post,images));
+        }
+
+        return postListResponseDtoList;
+    }
 }
