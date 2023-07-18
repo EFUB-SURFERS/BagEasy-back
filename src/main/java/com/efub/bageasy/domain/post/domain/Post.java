@@ -32,8 +32,8 @@ public class Post extends BaseTimeEntity {
     @Column
     private Long price;
 
-    @Column(name = "school_id", nullable = false)
-    private Long schoolId;
+    @Column(name = "school", nullable = false)
+    private String school;
 
     @Column(name = "member_id", nullable = false)
     private Long memberId;
@@ -46,24 +46,24 @@ public class Post extends BaseTimeEntity {
 
     @Builder
     public Post(Long postId, String title, String content, Boolean isSold, Long price,
-                Long schoolId, Long memberId, Long buyerId, List<Image> images){
+                String school, Long memberId, Long buyerId, List<Image> images){
         this.postId=postId;
         this.title=title;
         this.content=content;
         this.isSold=isSold;
         this.price=price;
-        this.schoolId=schoolId;
+        this.school=school;
         this.memberId=memberId;
         this.buyerId=buyerId;
     }
 
-    public Post(String title, String content, Long price, Long memberId,Long schoolId){
+    public Post(String title, String content, Long price, Long memberId,String school){
         this.title=title;
         this.content=content;
         this.price=price;
         this.memberId=memberId;
         this.isSold=false;
-        this.schoolId= schoolId;
+        this.school= school;
     }
 
     // 양도글 수정
@@ -78,6 +78,5 @@ public class Post extends BaseTimeEntity {
     public void updateIsSold(Long buyerId) {
         this.isSold= Boolean.valueOf("true");
         this.buyerId=buyerId;
-
     }
 }
