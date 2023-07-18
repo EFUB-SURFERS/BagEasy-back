@@ -20,18 +20,23 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private String nickname;
 
-    @Column(name = "school_id")
-    private Long schoolId;
+    @Column
+    private String school;
 
     @Builder
-    public Member(String email, String nickname, Long schoolId){
+    public Member(String email, String nickname, String school){
         this.email = email;
         this.nickname = nickname;
-        this.schoolId = schoolId;
+        this.school = school;
     }
 
     public Member updateNickname(String nickname){
         this.nickname = nickname;
+        return this;
+    }
+
+    public Member updateSchool(String school){
+        this.school = school;
         return this;
     }
 }
