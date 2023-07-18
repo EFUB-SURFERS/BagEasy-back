@@ -15,6 +15,7 @@ public class PostResponseDto {
     private String postContent;
     private Long price;
     private Boolean isSold;
+    private String school;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
@@ -24,6 +25,7 @@ public class PostResponseDto {
         this.postContent=post.getContent();
         this.price=post.getPrice();
         this.isSold=post.getIsSold();
+        this.school=post.getSchool();
         this.createdAt=post.getCreatedAt();
         this.modifiedAt=post.getModifiedAt();
 
