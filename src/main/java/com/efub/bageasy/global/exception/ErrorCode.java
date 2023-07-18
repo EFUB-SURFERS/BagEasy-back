@@ -17,7 +17,13 @@ public enum ErrorCode {
 
     NO_MEMBER_EXIST(HttpStatus.BAD_REQUEST, "가입되지 않은 회원입니다."),
 
+
     DUPLICATE_NICKNAME(HttpStatus.BAD_REQUEST, "이미 존재하는 닉네임입니다.");
+
+    FILE_CONVERT_ERROR(HttpStatus.BAD_REQUEST,"파일 전환에 실패하였습니다."),
+    FILE_UPLOAD_ERROR(HttpStatus.BAD_REQUEST,"이미지 업로드에 실패하였습니다."),
+    FILE_DELETE_ERROR(HttpStatus.BAD_REQUEST,"이미지 삭제에 실패하였습니다.");
+
 
     private final HttpStatus status;
     private final String message;
