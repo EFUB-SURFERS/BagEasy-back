@@ -73,6 +73,7 @@ public class PostController {
 
     }
 
+
     // 구매 확정
     @PutMapping("/{postId}/isSold")
     @ResponseStatus(HttpStatus.OK)
