@@ -9,14 +9,14 @@ public class MemberInfoDto {
     public Long memberId;
     public String email;
     public String nickname;
-    public String school;
+    public Long schoolId;
 
     @Builder
     public MemberInfoDto(Member member){
         this.memberId = member.getMemberId();
         this.email = member.getEmail();
         this.nickname = member.getNickname();
-        this.school = member.getSchool();
+        this.schoolId = member.getSchoolId();
     }
 }
 
