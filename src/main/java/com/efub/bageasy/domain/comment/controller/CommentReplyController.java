@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor    // 생성자를 통한 의존관계 주입
-@RequestMapping("/comments/{commentId}/replys")
+@RequestMapping("/comments/{commentId}/replies")
 public class CommentReplyController {
     private final ReplyService replyService;
 
