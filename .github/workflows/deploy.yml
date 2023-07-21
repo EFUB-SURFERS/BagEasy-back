@@ -6,7 +6,8 @@ on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches: [ "develop" ]
-
+  pull_request:
+    branches: [ "develop" ]
 
 env:
   APPLICATION: ${{ secrets.APPLICATION }}
@@ -59,8 +60,7 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             sudo docker rm -f $(docker ps -qa)
-            sudo docker stop $(docker ps -a -q)
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/bageasy
-            sudo docker run -d --log-driver=syslog -p 80:8080 ${{ secrets.DOCKER_USERNAME }}/bageasy
-            sudo docker rm $(docker ps --filter 'status=exited' -a -q)
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/bageasy-nginx
+            docker-compose up -d
             docker image prune -f
