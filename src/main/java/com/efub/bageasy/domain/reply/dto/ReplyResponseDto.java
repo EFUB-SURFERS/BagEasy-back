@@ -13,7 +13,7 @@ public class ReplyResponseDto {
     private String replyContent;
     private Boolean isSecret;
 
-    public ReplyResponseDto(Reply reply){
+    public ReplyResponseDto(Reply reply, String writer){
         this.replyId=reply.getReplyId();
         this.commentId=reply.getCommentId();
         this.memberId=reply.getMemberId();
