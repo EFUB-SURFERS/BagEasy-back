@@ -5,7 +5,7 @@ import com.efub.bageasy.domain.image.service.ImageService;
 import com.efub.bageasy.domain.member.domain.Member;
 import com.efub.bageasy.domain.member.service.MemberService;
 import com.efub.bageasy.domain.post.domain.Post;
-import com.efub.bageasy.domain.post.dto.PostListResponseDto;
+import com.efub.bageasy.domain.post.dto.PostResponseDto;
 import com.efub.bageasy.domain.post.service.PostService;
 import com.efub.bageasy.global.config.AuthUser;
 import lombok.RequiredArgsConstructor;
@@ -26,18 +26,19 @@ public class MemberPostController {
     // 멤버 당 작성한 양도글 목록
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<PostListResponseDto> getMemberPost(@AuthUser Member member, @PathVariable Long memberId){
+    public List<PostResponseDto> getMemberPost(@AuthUser Member member, @PathVariable Long memberId){
         List<Post> postList = postService.findPostListBySellerId(member.getMemberId());
 
-        List<PostListResponseDto> postListResponseDtoList = new ArrayList<>();
+        List<PostResponseDto> postListResponseDto = new ArrayList<>();
 
         for(Post post:postList){
+            String buyerNickName = memberService.findNicknameById(post.getBuyerId());
             List<Image> images = imageService.findPostImage(post);
 
-            postListResponseDtoList.add(new PostListResponseDto(post,images));
+            postListResponseDto.add(new PostResponseDto(post,images, member , buyerNickName));
         }
 
-        return postListResponseDtoList;
+        return postListResponseDto;
     }
 
 }
