@@ -1,7 +1,6 @@
 package com.efub.bageasy.domain.comment.controller;
 
 
-import com.efub.bageasy.domain.member.service.MemberService;
 import com.efub.bageasy.domain.reply.domain.Reply;
 import com.efub.bageasy.domain.reply.dto.ReplyResponseDto;
 import com.efub.bageasy.domain.reply.service.ReplyService;
@@ -17,8 +16,6 @@ import java.util.List;
 @RequestMapping("/comments/{commentId}/replies")
 public class CommentReplyController {
     private final ReplyService replyService;
-    private final MemberService memberService;
-
 
     // 댓글의 모든 대댓글 조회
     @GetMapping
@@ -28,9 +25,7 @@ public class CommentReplyController {
         List<ReplyResponseDto> responseDtoList = new ArrayList<>();
 
         for(Reply reply:replyList){
-            String writer = memberService.findNicknameById(reply.getMemberId());
-
-            responseDtoList.add(new ReplyResponseDto(reply , writer));
+            responseDtoList.add(new ReplyResponseDto(reply));
         }
 
         return responseDtoList;

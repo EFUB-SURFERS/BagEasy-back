@@ -2,6 +2,7 @@ package com.efub.bageasy.domain.member.service;
 
 import com.efub.bageasy.domain.member.domain.Member;
 import com.efub.bageasy.domain.member.dto.request.NicknameRequestDto;
+import com.efub.bageasy.domain.member.dto.request.SchoolRequestDto;
 import com.efub.bageasy.domain.member.dto.response.LoginResponseDto;
 import com.efub.bageasy.domain.member.oauth.GoogleOAuthToken;
 import com.efub.bageasy.domain.member.oauth.GoogleUser;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,9 +63,9 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Member findMemberByEmail(String email){
+    public Member findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
-                .orElseThrow(()->new CustomException(ErrorCode.NO_MEMBER_EXIST));
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_MEMBER_EXIST));
     }
 
     @Transactional(readOnly = true)
@@ -72,8 +74,23 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NO_MEMBER_EXIST));
     }
 
-    public Member updateMember(Member member, NicknameRequestDto requestDto){
-        return member.updateNickname(requestDto.getNickname());
+    public Member updateNickname(NicknameRequestDto requestDto, Member member) {
+        String nickname = requestDto.getNickname();
+        if (memberRepository.existsMemberByNickname(nickname))
+            throw new CustomException(ErrorCode.DUPLICATE_NICKNAME);
+        else
+            return member.updateNickname(requestDto.getNickname());
+    }
+
+
+    public String findNicknameById(Long memberId){
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()->new CustomException(ErrorCode.NO_MEMBER_EXIST));
+        return member.getNickname();
+    }
+
+    public Member updateSchool(SchoolRequestDto requestDto, Member member) {
+        return member.updateSchool(requestDto.getSchool());
     }
 
     public LoginResponseDto googleLogin(String code) throws IOException {
@@ -92,7 +109,7 @@ public class MemberService {
         Member member;
         if (!isExistingMember) {
             member = saveMember(googleUser);
-        }else{
+        } else {
             member = findMemberByEmail(email);
         }
 
@@ -103,7 +120,7 @@ public class MemberService {
     }
 
 
-    public boolean checkJoined(String email){
+    public boolean checkJoined(String email) {
         boolean isJoined = memberRepository.existsMemberByEmail(email);
         return isJoined;
     }
