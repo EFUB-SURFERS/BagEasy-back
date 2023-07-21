@@ -3,6 +3,7 @@ package com.efub.bageasy.domain.member.controller;
 import com.efub.bageasy.domain.member.domain.Member;
 import com.efub.bageasy.domain.member.dto.request.LoginRequestDto;
 import com.efub.bageasy.domain.member.dto.request.NicknameRequestDto;
+import com.efub.bageasy.domain.member.dto.request.SchoolRequestDto;
 import com.efub.bageasy.domain.member.dto.response.LoginResponseDto;
 import com.efub.bageasy.domain.member.dto.response.MemberInfoDto;
 import com.efub.bageasy.domain.member.service.MemberService;
@@ -25,10 +26,23 @@ public class MemberController {
         return memberService.googleLogin(requestDto.getCode());
     }
 
-    @PutMapping("/members/profile/nickname")
+    @PutMapping("/members/nickname")
     public MemberInfoDto nicknameUpdate(@RequestBody NicknameRequestDto requestDto, @AuthUser Member member){
-        return new MemberInfoDto(memberService.updateMember(member, requestDto));   //트랜잭션
+        return new MemberInfoDto(memberService.updateNickname(requestDto, member));   //트랜잭션
+    }
 
+    @PutMapping("/members/school")
+    public MemberInfoDto schoolUpdate(@RequestBody SchoolRequestDto requestDto, @AuthUser Member member){
+        return new MemberInfoDto(memberService.updateSchool(requestDto, member));
+    }
 
+    @GetMapping("/members/me")
+    public MemberInfoDto profileGet(@AuthUser Member member){
+        return new MemberInfoDto(member);
+    }
+
+    @GetMapping("/members/{memberId}")
+    public MemberInfoDto memberFind(@PathVariable Long memberId){
+        return new MemberInfoDto(memberService.findMemberById(memberId));
     }
 }
