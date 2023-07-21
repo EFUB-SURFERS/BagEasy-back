@@ -19,7 +19,7 @@ public class CommentReplyController {
     private final ReplyService replyService;
     private final MemberService memberService;
 
-    // 댓글의 모든 대댓글 조회
+    // 댓글의 모든 대댓글 조회 -> 닉네임 반환
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ReplyResponseDto> getReplyList(@PathVariable Long commentId){
