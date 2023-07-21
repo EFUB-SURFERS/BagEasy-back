@@ -19,7 +19,7 @@ public class CommentReplyController {
     private final ReplyService replyService;
     private final MemberService memberService;
 
-    // 댓글의 모든 대댓글 조회 -> 닉네임 반환
+    // 댓글의 모든 대댓글 조회
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ReplyResponseDto> getReplyList(@PathVariable Long commentId){
@@ -27,7 +27,7 @@ public class CommentReplyController {
         List<ReplyResponseDto> responseDtoList = new ArrayList<>();
 
         for(Reply reply:replyList){
-            String writer  = memberService.findNicknameById(reply.getMemberId());
+            String writer = memberService.findNicknameById(reply.getMemberId());
             responseDtoList.add(new ReplyResponseDto(reply, writer));
         }
 

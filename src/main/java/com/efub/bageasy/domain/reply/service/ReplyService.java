@@ -41,7 +41,7 @@ public class ReplyService {
     // 대댓글 목록 조회
     public List<Reply> findReplyList(Long commentId) {
         Comment comment = commentService.findComment(commentId);
-        return replyRepository.findAllByCommentId(commentId);
+        return replyRepository.findAllByCommentIdOrderByCreatedAt(commentId);
     }
 
     //대댓글 삭제
