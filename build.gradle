@@ -28,7 +28,6 @@ dependencies {
 
 	//db
 	runtimeOnly 'com.mysql:mysql-connector-j'
-	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
 	//security
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -54,9 +53,9 @@ dependencies {
 	//GSON
 	implementation 'com.google.code.gson:gson:2.9.0'
 
-	//kafka
-	implementation 'org.springframework.kafka:spring-kafka'
-	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+	// S3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+	implementation "com.amazonaws:aws-java-sdk-s3:1.12.281"
 
 }
 
