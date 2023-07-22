@@ -1,5 +1,7 @@
 package com.efub.bageasy.domain.post.service;
 
+import com.efub.bageasy.domain.heart.domain.Heart;
+import com.efub.bageasy.domain.heart.repository.HeartRepository;
 import com.efub.bageasy.domain.image.domain.Image;
 import com.efub.bageasy.domain.image.repository.ImageRepository;
 //import com.efub.bageasy.domain.member.repository.MemberRepository;
@@ -9,6 +11,8 @@ import com.efub.bageasy.domain.post.dto.PostRequestDto;
 import com.efub.bageasy.domain.post.dto.PostUpdateIsSoldRequestDto;
 import com.efub.bageasy.domain.post.dto.PostUpdateRequestDto;
 import com.efub.bageasy.domain.post.repository.PostRepository;
+import com.efub.bageasy.global.exception.CustomException;
+import com.efub.bageasy.global.exception.ErrorCode;
 import com.efub.bageasy.global.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +31,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final ImageRepository imageRepository;
+    private final HeartRepository heartRepository;
 
     @Autowired
     private final S3Service s3Service;
@@ -102,5 +109,16 @@ public class PostService {
     public void deletePost(Member member, Long postId) {
         Post post=findPost(postId);
         postRepository.delete(post);
+    }
+
+    //찜한 양도글 목록 조회
+    @Transactional(readOnly = true)
+    public List<Post> findHeartPost(Member member){
+        List<Post> heartPosts = heartRepository.findByMemberId(member.getMemberId())
+                .stream()
+                .map(heart -> postRepository.findById(heart.getPostId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND)))
+                .collect(Collectors.toList());
+        return heartPosts;
     }
 }
