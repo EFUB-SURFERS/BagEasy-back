@@ -40,6 +40,7 @@ public class PostController {
         if(images == null){
             throw new IOException("이미지가 없습니다.");
         }
+
         List<String> imgPaths = s3Service.upload(images);
 
         Post post = postService.addPost(member,requestDto,imgPaths);
@@ -97,7 +98,7 @@ public class PostController {
         postService.updateIsSold(requestDto,postId,member);
         Post post = postService.findPost(postId);
         List<Image>imageList = imageService.findPostImage(post);
-        String buyerNickname = memberService.findNicknameById(requestDto.getBuyerId()); // 흐음 요청도 닉네임으로 받아야 하나? ㅜㅜ
+        String buyerNickname = memberService.findNicknameById(requestDto.getBuyerId());
 
         PostResponseDto responseDto = new PostResponseDto(post,imageList, member , buyerNickname);
         return responseDto;
