@@ -11,16 +11,16 @@ import java.time.LocalDateTime;
 @Builder
 public class CommentResponseDto {
     private Long commentId;
-    private Long memberId;
+    private String writer;
     private Long postId;
     private String commentContent;
     private Boolean isSecret;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public CommentResponseDto(Comment comment){
+    public CommentResponseDto(Comment comment, String writer){
         this.commentId=comment.getCommentId();
-        this.memberId=comment.getMemberId();
+        this.writer = writer;
         this.postId=comment.getPostId();
         this.commentContent=comment.getContent();
         this.isSecret=comment.getIsSecret();
