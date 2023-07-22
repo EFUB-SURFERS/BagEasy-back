@@ -54,15 +54,13 @@ public class PostController {
 
 
 
-    // 양도글 수정
+    // 게시글 수정
     @PutMapping("/{postId}")
     @ResponseStatus(HttpStatus.OK)
     public PostResponseDto modifyPost(@AuthUser Member member,
                                          @PathVariable Long postId,
                                          @RequestPart(value="dto") PostUpdateRequestDto requestDto,
                                          @RequestPart(value="addImage") List<MultipartFile> addImages) throws IOException {
-
-
         //이미지 삭제
         List<Image> deleteImageList = imageService.findImageList(requestDto.getImageIdList());
         List<String> deleteImageUrlList = new ArrayList<>();
@@ -71,7 +69,6 @@ public class PostController {
             s3Service.deleteImage(image.getImageUrl());
         }
 
-
         //이미지 업로드
         List<String> imgPaths = s3Service.upload(addImages); // S3 에 추가 이미지 업로드
 
@@ -79,7 +76,8 @@ public class PostController {
         postService.updatePost(postId,requestDto,deleteImageList,imgPaths);
 
         Post post=postService.findPost(postId);
-        String buyerNickName = memberService.findNicknameById(post.getBuyerId());
+        String buyerNickName = null;
+        if(post.getBuyerId() != null) buyerNickName = memberService.findNicknameById(post.getBuyerId());
         List<Image> imageList = imageService.findPostImage(post);
 
         return new PostResponseDto(post,imageList,member,buyerNickName);
@@ -97,14 +95,14 @@ public class PostController {
         postService.updateIsSold(requestDto,postId,member);
         Post post = postService.findPost(postId);
         List<Image>imageList = imageService.findPostImage(post);
-        String buyerNickname = memberService.findNicknameById(requestDto.getBuyerId()); // 흐음 요청도 닉네임으로 받아야 하나? ㅜㅜ
+        String buyerNickname = memberService.findNicknameById(requestDto.getBuyerId());
 
         PostResponseDto responseDto = new PostResponseDto(post,imageList, member , buyerNickname);
         return responseDto;
     }
 
 
-    // 전체 양도글 리스트 조회
+    // 전체 게시글 리스트 조회
     @GetMapping
     @ResponseStatus(value = HttpStatus.OK)
     public List<PostResponseDto> getPostList(){
@@ -126,13 +124,16 @@ public class PostController {
     }
 
 
-    // 양도글 조회 : 1개
+    // 게시글 조회 : 1개
     @GetMapping("/{postId}")
     @ResponseStatus(HttpStatus.OK)
     public PostResponseDto getPost(@PathVariable Long postId){
         Post post = postService.findPost(postId);
         Member member = memberService.findMemberById(post.getMemberId());
-        String buyerNickName = memberService.findNicknameById(post.getBuyerId());
+
+        String buyerNickName = null;
+        if(post.getBuyerId() != null) buyerNickName = memberService.findNicknameById(post.getBuyerId());
+
         List<Image> images = imageService.findPostImage(post);
 
         PostResponseDto responseDto = new PostResponseDto(post,images, member , buyerNickName);
@@ -140,7 +141,7 @@ public class PostController {
 
     }
 
-    //양도글 삭제
+    //게시글 삭제
     @DeleteMapping("/{postId}")
     @ResponseStatus(HttpStatus.OK)
     public String deletePost(@AuthUser Member member, @PathVariable Long postId) throws IOException {
