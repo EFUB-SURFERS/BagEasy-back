@@ -113,7 +113,11 @@ public class PostController {
 
         for(Post post:posts){
             Member member = memberService.findMemberById(post.getMemberId());
-            String buyerNickname = memberService.findNicknameById(post.getBuyerId());
+            String buyerNickname = null;
+            if(post.getBuyerId() != null){
+                buyerNickname = memberService.findNicknameById(post.getBuyerId());
+            }
+
             List<Image> images = imageService.findPostImage(post);
             responseDtoList.add(new PostResponseDto(post,images, member,buyerNickname));
         }
