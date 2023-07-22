@@ -66,7 +66,7 @@ public class MemberPostController {
             String buyerNickName = memberService.findNicknameById(post.getBuyerId());  
             List<Image> images = imageService.findPostImage(post);
 
-            dtoList.add(new PostResponseDto(post, images, member, buyerNickname));
+            dtoList.add(new PostResponseDto(post, images, member, buyerNickName));
         }
 
         return dtoList;
