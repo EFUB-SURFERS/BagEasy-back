@@ -91,6 +91,10 @@ public class PostService {
         return postRepository.findAllByMemberId(memberId);
     }
 
+    public List<Post> findPostListByBuyerId(Long buyerId){
+        return postRepository.findAllByBuyerId(buyerId);
+    }
+
     // 구매 확정
     public void updateIsSold(PostUpdateIsSoldRequestDto requestDto, Long postId, Member member) {
         Post post = findPost(postId);
