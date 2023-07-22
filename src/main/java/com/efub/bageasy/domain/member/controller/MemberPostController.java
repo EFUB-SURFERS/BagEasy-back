@@ -3,8 +3,9 @@ package com.efub.bageasy.domain.member.controller;
 import com.efub.bageasy.domain.image.domain.Image;
 import com.efub.bageasy.domain.image.service.ImageService;
 import com.efub.bageasy.domain.member.domain.Member;
+import com.efub.bageasy.domain.member.service.MemberService;
 import com.efub.bageasy.domain.post.domain.Post;
-import com.efub.bageasy.domain.post.dto.PostListResponseDto;
+import com.efub.bageasy.domain.post.dto.PostResponseDto;
 import com.efub.bageasy.domain.post.service.PostService;
 import com.efub.bageasy.global.config.AuthUser;
 import lombok.RequiredArgsConstructor;
@@ -22,31 +23,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberPostController {
 
+    private final MemberService memberService;
     private final PostService postService;
     private final ImageService imageService;
 
     // 멤버 당 작성한 양도글 목록
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<PostListResponseDto> getMemberPost(@AuthUser Member member) {
+    public List<PostResponseDto> getMemberPost(@AuthUser Member member) {
         List<Post> postList = postService.findPostListBySellerId(member.getMemberId());
 
-        return postListToDtoList(postList);
+        return postListToDtoList(postList, member);
     }
 
     // 구매내역
     @GetMapping("/purchases")
     @ResponseStatus(HttpStatus.OK)
-    public List<PostListResponseDto> purchaseList(@AuthUser Member member) {
+    public List<PostResponseDto> purchaseList(@AuthUser Member member) {
         List<Post> purchases = postService.findPostListByBuyerId(member.getMemberId());
 
-        return postListToDtoList(purchases);
+        return postListToDtoList(purchases, member);
     }
 
     // 판매내역
     @GetMapping("/sales")
     @ResponseStatus(HttpStatus.OK)
-    public List<PostListResponseDto> saleList(@AuthUser Member member) {
+    public List<PostResponseDto> saleList(@AuthUser Member member) {
         List<Post> postList = postService.findPostListBySellerId(member.getMemberId());
 
         List<Post> sales = new ArrayList<>();
@@ -54,16 +56,17 @@ public class MemberPostController {
             if (post.getIsSold()) sales.add(post);
         }
 
-        return postListToDtoList(sales);
+        return postListToDtoList(sales, member);
     }
 
-    public List<PostListResponseDto> postListToDtoList(List<Post> postList) {
-        List<PostListResponseDto> dtoList = new ArrayList<>();
+    public List<PostResponseDto> postListToDtoList(List<Post> postList, Member member) {
+        List<PostResponseDto> dtoList = new ArrayList<>();
 
         for (Post post : postList) {
+            String buyerNickName = memberService.findNicknameById(post.getBuyerId());  
             List<Image> images = imageService.findPostImage(post);
 
-            dtoList.add(new PostListResponseDto(post, images));
+            dtoList.add(new PostResponseDto(post, images, member, buyerNickname));
         }
 
         return dtoList;

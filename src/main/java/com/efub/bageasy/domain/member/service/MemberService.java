@@ -82,6 +82,13 @@ public class MemberService {
             return member.updateNickname(requestDto.getNickname());
     }
 
+
+    public String findNicknameById(Long memberId){
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(()->new CustomException(ErrorCode.NO_MEMBER_EXIST));
+        return member.getNickname();
+    }
+
     public Member updateSchool(SchoolRequestDto requestDto, Member member) {
         return member.updateSchool(requestDto.getSchool());
     }

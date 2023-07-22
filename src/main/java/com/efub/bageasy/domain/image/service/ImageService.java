@@ -32,6 +32,9 @@ public class ImageService {
 
     public Image findImage(Long imageId) {
         return imageRepository.findImageByImageId(imageId);
+    }
 
+    public Image findImageByUrl(String imageUrl){
+        return imageRepository.findImageByImageUrl(imageUrl);
     }
 }
