@@ -43,7 +43,7 @@ public class PostService {
         String content = requestDto.getPostContent();
         Long price = requestDto.getPrice();
         Long memberId=member.getMemberId();
-        String school = member.getSchool();
+        String school = requestDto.getSchool();
 
         Post post = new Post(title,content,price,memberId,school);
         postRepository.save(post);
@@ -95,6 +95,10 @@ public class PostService {
     // 멤버 Id 로 양도글 목록 조회
     public List<Post> findPostListBySellerId(Long memberId) {
         return postRepository.findAllByMemberId(memberId);
+    }
+
+    public List<Post> findPostListByBuyerId(Long buyerId){
+        return postRepository.findAllByBuyerId(buyerId);
     }
 
     // 구매 확정

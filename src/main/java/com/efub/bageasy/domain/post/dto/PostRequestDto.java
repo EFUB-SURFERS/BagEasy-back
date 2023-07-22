@@ -15,9 +15,7 @@ import java.util.List;
 @Setter
 public class PostRequestDto {
     private String postTitle;
-    //private Long sellerId;
     private Long price;
     private String postContent;
-    private List<MultipartFile> images=new ArrayList<>();
-
+    private String school;
 }
