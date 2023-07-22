@@ -12,4 +12,7 @@ public interface ImageRepository extends JpaRepository<Image,Long> {
     List<Image> findALLByPost(Post post);
     Image findImageByImageId(Long imageId);
 
+    // url 로 이미지 찾기
+    Image findImageByImageUrl(String imageUrl);
+
 }

@@ -3,6 +3,7 @@ package com.efub.bageasy.domain.post.controller;
 import com.efub.bageasy.domain.image.domain.Image;
 import com.efub.bageasy.domain.image.service.ImageService;
 import com.efub.bageasy.domain.member.domain.Member;
+import com.efub.bageasy.domain.member.service.MemberService;
 import com.efub.bageasy.domain.post.domain.Post;
 import com.efub.bageasy.domain.post.dto.*;
 import com.efub.bageasy.domain.post.service.PostService;
@@ -26,6 +27,8 @@ public class PostController {
     private final S3Service s3Service;
     private final ImageService imageService;
 
+    private final MemberService memberService;
+
     //게시글 생성
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
@@ -37,39 +40,49 @@ public class PostController {
         if(images == null){
             throw new IOException("이미지가 없습니다.");
         }
-
         List<String> imgPaths = s3Service.upload(images);
 
         Post post = postService.addPost(member,requestDto,imgPaths);
 
-        return new PostResponseDto(post);
+        List<Image> imageList = new ArrayList<>();
+        for(String imageUrl : imgPaths){
+            imageList.add(imageService.findImageByUrl(imageUrl));
+        }
+
+        return new PostResponseDto(post,imageList,member);
     }
+
 
 
     // 양도글 수정
     @PutMapping("/{postId}")
     @ResponseStatus(HttpStatus.OK)
-    public String modifyPost(@AuthUser Member member,
-                             @PathVariable Long postId,
-                             @RequestPart(value="dto") PostUpdateRequestDto requestDto,
-                             @RequestPart(value="addImage") List<MultipartFile> addImages) throws IOException {
+    public PostResponseDto modifyPost(@AuthUser Member member,
+                                         @PathVariable Long postId,
+                                         @RequestPart(value="dto") PostUpdateRequestDto requestDto,
+                                         @RequestPart(value="addImage") List<MultipartFile> addImages) throws IOException {
 
-        List<Image> deleteImageList = imageService.findImageList(requestDto.getImageIdList()); // 삭제할 이미지
 
+        //이미지 삭제
+        List<Image> deleteImageList = imageService.findImageList(requestDto.getImageIdList());
         List<String> deleteImageUrlList = new ArrayList<>();
         for(Image image:deleteImageList){
             deleteImageUrlList.add(image.getImageUrl());
             s3Service.deleteImage(image.getImageUrl());
         }
 
+
+        //이미지 업로드
         List<String> imgPaths = s3Service.upload(addImages); // S3 에 추가 이미지 업로드
 
+        //게시글 수정
         postService.updatePost(postId,requestDto,deleteImageList,imgPaths);
 
-
         Post post=postService.findPost(postId);
-        return requestDto.getImageIdList()+" , "+deleteImageUrlList.get(0).substring(deleteImageUrlList.get(0).lastIndexOf('/') + 1,
-                deleteImageUrlList.get(0).length());
+        String buyerNickName = memberService.findNicknameById(post.getBuyerId());
+        List<Image> imageList = imageService.findPostImage(post);
+
+        return new PostResponseDto(post,imageList,member,buyerNickName);
 
     }
 
@@ -77,43 +90,48 @@ public class PostController {
     // 구매 확정
     @PutMapping("/{postId}/isSold")
     @ResponseStatus(HttpStatus.OK)
-    public PostListResponseDto updateIsSold(@AuthUser Member member,
-                                            @PathVariable Long postId,
-                                            @RequestBody @Valid PostUpdateIsSoldRequestDto requestDto){
+    public PostResponseDto updateIsSold(@AuthUser Member member,
+                                        @PathVariable Long postId,
+                                        @RequestBody @Valid PostUpdateIsSoldRequestDto requestDto){
 
         postService.updateIsSold(requestDto,postId,member);
         Post post = postService.findPost(postId);
         List<Image>imageList = imageService.findPostImage(post);
+        String buyerNickname = memberService.findNicknameById(requestDto.getBuyerId()); // 흐음 요청도 닉네임으로 받아야 하나? ㅜㅜ
 
-        PostListResponseDto responseDto = new PostListResponseDto(post,imageList);
+        PostResponseDto responseDto = new PostResponseDto(post,imageList, member , buyerNickname);
         return responseDto;
-
     }
 
 
     // 전체 양도글 리스트 조회
     @GetMapping
     @ResponseStatus(value = HttpStatus.OK)
-    public List<PostListResponseDto> getPostList(){
+    public List<PostResponseDto> getPostList(){
         List<Post> posts = postService.findPostList();
-        List<PostListResponseDto> responseDtoList = new ArrayList<>();
+        List<PostResponseDto> responseDtoList = new ArrayList<>();
 
         for(Post post:posts){
+            Member member = memberService.findMemberById(post.getMemberId());
+            String buyerNickname = memberService.findNicknameById(post.getBuyerId());
             List<Image> images = imageService.findPostImage(post);
-
-            responseDtoList.add(new PostListResponseDto(post,images));
+            responseDtoList.add(new PostResponseDto(post,images, member,buyerNickname));
         }
+
         return responseDtoList;
     }
+
 
     // 양도글 조회 : 1개
     @GetMapping("/{postId}")
     @ResponseStatus(HttpStatus.OK)
-    public PostListResponseDto getPost(@PathVariable Long postId){
+    public PostResponseDto getPost(@PathVariable Long postId){
         Post post = postService.findPost(postId);
+        Member member = memberService.findMemberById(post.getMemberId());
+        String buyerNickName = memberService.findNicknameById(post.getBuyerId());
         List<Image> images = imageService.findPostImage(post);
 
-        PostListResponseDto responseDto = new PostListResponseDto(post,images);
+        PostResponseDto responseDto = new PostResponseDto(post,images, member , buyerNickName);
         return responseDto;
 
     }
