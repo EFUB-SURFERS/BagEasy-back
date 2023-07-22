@@ -133,19 +133,4 @@ public class PostController {
 
         return "성공적으로 삭제되었습니다!";
     }
-
-    //찜한 양도글 조회
-    @GetMapping("/likes")
-    @ResponseStatus(HttpStatus.OK)
-    public List<PostListResponseDto> getHeartPostList(@AuthUser Member member){
-        List<Post> posts = postService.findHeartPost(member);
-        List<PostListResponseDto> responseDtoList = new ArrayList<>();
-
-        for(Post post : posts){
-            List<Image> images = imageService.findPostImage(post);
-            responseDtoList.add(new PostListResponseDto(post, images));
-        }
-
-        return responseDtoList;
-    }
 }
