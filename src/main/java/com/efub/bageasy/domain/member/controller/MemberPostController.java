@@ -3,6 +3,7 @@ package com.efub.bageasy.domain.member.controller;
 import com.efub.bageasy.domain.image.domain.Image;
 import com.efub.bageasy.domain.image.service.ImageService;
 import com.efub.bageasy.domain.member.domain.Member;
+import com.efub.bageasy.domain.member.service.MemberService;
 import com.efub.bageasy.domain.post.domain.Post;
 import com.efub.bageasy.domain.post.dto.PostResponseDto;
 import com.efub.bageasy.domain.post.service.PostService;
