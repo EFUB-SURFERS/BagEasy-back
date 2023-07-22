@@ -28,7 +28,7 @@ public class CommentReplyController {
 
         for(Reply reply:replyList){
             String writer = memberService.findNicknameById(reply.getMemberId());
-            responseDtoList.add(new ReplyResponseDto(reply, writer));
+            responseDtoList.add(new ReplyResponseDto(reply,writer));
         }
 
         return responseDtoList;
