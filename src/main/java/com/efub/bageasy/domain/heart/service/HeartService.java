@@ -1,9 +1,11 @@
 package com.efub.bageasy.domain.heart.service;
 
 import com.efub.bageasy.domain.heart.domain.Heart;
+import com.efub.bageasy.domain.heart.dto.HeartPostResponseDto;
 import com.efub.bageasy.domain.heart.dto.HeartResponseDto;
 import com.efub.bageasy.domain.heart.repository.HeartRepository;
 import com.efub.bageasy.domain.member.domain.Member;
+import com.efub.bageasy.domain.post.domain.Post;
 import com.efub.bageasy.domain.post.repository.PostRepository;
 import com.efub.bageasy.global.exception.CustomException;
 import com.efub.bageasy.global.exception.ErrorCode;
@@ -11,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,5 +51,16 @@ public class HeartService {
         else{
             return new HeartResponseDto(false);
         }
+    }
+
+    //찜한 양도글 목록 조회
+    @Transactional(readOnly = true)
+    public List<HeartPostResponseDto> findHeartPost(Member member){
+        return heartRepository.findByMemberId(member.getMemberId())
+                .stream()
+                .map(heart -> postRepository.findById(heart.getPostId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND)))
+                .map(HeartPostResponseDto::new)
+                .collect(Collectors.toList());
     }
 }

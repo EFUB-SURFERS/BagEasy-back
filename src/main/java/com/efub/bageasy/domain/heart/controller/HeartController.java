@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/post/{postId}/likes")
+@RequestMapping("/posts/{postId}/likes")
 @RequiredArgsConstructor
 public class HeartController {
     private HeartService heartService;
