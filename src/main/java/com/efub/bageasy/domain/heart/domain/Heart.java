@@ -21,4 +21,9 @@ public class Heart extends BaseTimeEntity {
 
     @Column(name = "post_id", nullable = false)
     private Long postId;
+
+    public Heart(Long memberId, Long postId){
+        this.memberId = memberId;
+        this.postId = postId;
+    }
 }
