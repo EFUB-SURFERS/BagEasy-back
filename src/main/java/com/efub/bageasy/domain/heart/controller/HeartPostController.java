@@ -18,7 +18,7 @@ public class HeartPostController {
     private HeartService heartService;
 
     @GetMapping("")
-    public ResponseEntity<List<HeartPostResponseDto>> checkPostHeart(@AuthUser Member member) {
+    public ResponseEntity<List<HeartPostResponseDto>> getHeartPostList(@AuthUser Member member) {
         List<HeartPostResponseDto> heartPostsResponseDto = heartService.findHeartPost(member);
         return ResponseEntity.status(HttpStatus.OK).body(heartPostsResponseDto);
     }
