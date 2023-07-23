@@ -1,5 +1,7 @@
 package com.efub.bageasy.domain.post.service;
 
+import com.efub.bageasy.domain.heart.domain.Heart;
+import com.efub.bageasy.domain.heart.repository.HeartRepository;
 import com.efub.bageasy.domain.image.domain.Image;
 import com.efub.bageasy.domain.image.repository.ImageRepository;
 //import com.efub.bageasy.domain.member.repository.MemberRepository;
@@ -9,6 +11,8 @@ import com.efub.bageasy.domain.post.dto.PostRequestDto;
 import com.efub.bageasy.domain.post.dto.PostUpdateIsSoldRequestDto;
 import com.efub.bageasy.domain.post.dto.PostUpdateRequestDto;
 import com.efub.bageasy.domain.post.repository.PostRepository;
+import com.efub.bageasy.global.exception.CustomException;
+import com.efub.bageasy.global.exception.ErrorCode;
 import com.efub.bageasy.global.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

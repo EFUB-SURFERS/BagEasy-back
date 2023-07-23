@@ -9,14 +9,14 @@ import lombok.Getter;
 public class ReplyResponseDto {
     private Long replyId;
     private Long commentId;
-    private Long memberId;
+    private String writer;
     private String replyContent;
     private Boolean isSecret;
 
-    public ReplyResponseDto(Reply reply){
+    public ReplyResponseDto(Reply reply , String writer){
         this.replyId=reply.getReplyId();
         this.commentId=reply.getCommentId();
-        this.memberId=reply.getMemberId();
+        this.writer = writer;
         this.replyContent=reply.getContent();
         this.isSecret=reply.getIsSecret();
 
