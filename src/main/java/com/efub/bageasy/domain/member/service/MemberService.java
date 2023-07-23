@@ -74,6 +74,12 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NO_MEMBER_EXIST));
     }
 
+    @Transactional(readOnly = true)
+    public Member findMemberByNickname(String nickname) {
+        return memberRepository.findByNickname(nickname)
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_MEMBER_EXIST));
+    }
+
     public Member updateNickname(NicknameRequestDto requestDto, Member member) {
         String nickname = requestDto.getNickname();
         if (memberRepository.existsMemberByNickname(nickname))
@@ -83,9 +89,9 @@ public class MemberService {
     }
 
 
-    public String findNicknameById(Long memberId){
+    public String findNicknameById(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(()->new CustomException(ErrorCode.NO_MEMBER_EXIST));
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_MEMBER_EXIST));
         return member.getNickname();
     }
 

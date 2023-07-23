@@ -41,8 +41,8 @@ public class MemberController {
         return new MemberInfoDto(member);
     }
 
-    @GetMapping("/members/{memberId}")
-    public MemberInfoDto memberFind(@PathVariable Long memberId){
-        return new MemberInfoDto(memberService.findMemberById(memberId));
+    @GetMapping("/members/{nickname}")
+    public MemberInfoDto memberFindByNickname(@PathVariable String nickname){
+        return new MemberInfoDto(memberService.findMemberByNickname(nickname));
     }
 }
