@@ -26,6 +26,7 @@ public class PostResponseDto {
     private Boolean isSold;
     private String school;
     private String buyerNickname = null;
+    private Long heartCount;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
@@ -48,7 +49,7 @@ public class PostResponseDto {
         }
     }
 
-    public PostResponseDto(Post post, List<Image> images, Member member , String buyerNickname){
+    public PostResponseDto(Post post, List<Image> images, Member member, String buyerNickname, Long heartCount){
         this.postId=post.getPostId();
         this.sellerId = member.getMemberId();
         this.sellerNickname = member.getNickname();
@@ -58,6 +59,7 @@ public class PostResponseDto {
         this.isSold=post.getIsSold();
         this.school=post.getSchool();
         this.buyerNickname = buyerNickname;
+        this.heartCount = heartCount;
         this.createdAt=post.getCreatedAt();
         this.modifiedAt=post.getModifiedAt();
         for(Image image:images){
