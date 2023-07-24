@@ -71,6 +71,7 @@ public class Post extends BaseTimeEntity {
        this.title=requestDto.getPostTitle();
        this.content=requestDto.getPostContent();
        this.price=requestDto.getPrice();
+       this.school = requestDto.getSchool();
 
     }
 
