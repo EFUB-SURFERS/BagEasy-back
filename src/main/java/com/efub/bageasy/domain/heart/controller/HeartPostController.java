@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/posts/likes")
 @RequiredArgsConstructor
 public class HeartPostController {
-    private HeartService heartService;
+    private final HeartService heartService;
 
     @GetMapping("")
     public ResponseEntity<List<HeartPostResponseDto>> getHeartPostList(@AuthUser Member member) {

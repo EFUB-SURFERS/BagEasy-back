@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class HeartService {
-    public final HeartRepository heartRepository;
-    public final PostRepository postRepository;
+    private final HeartRepository heartRepository;
+    private final PostRepository postRepository;
 
     @Transactional
     public void createByPostId(Member member, Long postId){
