@@ -67,8 +67,9 @@ public class MemberPostController {
             String buyerNickName = null;
             if(post.getBuyerId() != null) buyerNickName = memberService.findNicknameById(post.getBuyerId());
             List<Image> images = imageService.findPostImage(post);
+            Long heartCount = postService.countHeart(post.getPostId());
 
-            dtoList.add(new PostResponseDto(post, images, member, buyerNickName));
+            dtoList.add(new PostResponseDto(post, images, member, buyerNickName, heartCount));
         }
 
         return dtoList;

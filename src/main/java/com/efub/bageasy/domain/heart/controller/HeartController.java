@@ -13,21 +13,21 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/posts/{postId}/likes")
 @RequiredArgsConstructor
 public class HeartController {
-    private HeartService heartService;
+    private final HeartService heartService;
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<String> postHeart(@AuthUser Member member, @PathVariable("postId") Long postId) {
         heartService.createByPostId(member, postId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("")
+    @DeleteMapping
     public ResponseEntity<String> deleteHeart(@AuthUser Member member, @PathVariable("postId") Long postId) {
         heartService.deleteByPostId(member, postId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<HeartResponseDto> checkPostHeart(@AuthUser Member member, @PathVariable("postId") Long postId) {
         HeartResponseDto heartResponseDto = heartService.findExistence(member, postId);
         return ResponseEntity.status(HttpStatus.OK).body(heartResponseDto);
