@@ -21,18 +21,17 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
         registry.addEndpoint(("/chat"))
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
-        WebSocketMessageBrokerConfigurer.super.registerStompEndpoints(registry);
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/subscribe");
-        registry.setApplicationDestinationPrefixes("/publish");
+        registry.enableSimpleBroker("/topic/");
+        registry.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(stompHandler);
+        registration.interceptors(stompHandler); //stomp 메시지 핸들링
     }
 
     @Override

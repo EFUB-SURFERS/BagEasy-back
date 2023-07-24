@@ -59,14 +59,14 @@ public class StompHandler implements ChannelInterceptor {
         }
 
         return tokenProvider.getEmailFromToken(accessToken);
-
     }
 
     private void connectToChatRoom(StompHeaderAccessor accessor, String email){
         Long roomId = getChatRoomId(accessor);
-
-        chatRoomService.connectToChatRoom(roomId, email);
-        chatService.updateCountAllZero(roomId, email);
+//
+//        chatRoomService.connectToChatRoom(roomId, email);
+//        chatService.updateCountAllZero(roomId, email);
+        chatService.updateMessage(email, roomId);
     }
 
     private Long getChatRoomId(StompHeaderAccessor accessor){

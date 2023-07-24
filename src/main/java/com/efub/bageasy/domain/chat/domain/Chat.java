@@ -17,6 +17,7 @@ public class Chat {
     private Long senderId;
     private String nickname;
     private int type;
+    private String contentType;
     private String content;
     private LocalDateTime sentAt;
 }

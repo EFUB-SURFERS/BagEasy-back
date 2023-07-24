@@ -42,7 +42,7 @@ public class ListenerConfiguration {
         configurations.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaConstants.getGroupId());
         configurations.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configurations.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
-        configurations.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+        configurations.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         return new DefaultKafkaConsumerFactory<>(configurations, new StringDeserializer(), deserializer);
     }

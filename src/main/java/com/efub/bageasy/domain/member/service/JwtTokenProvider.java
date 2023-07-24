@@ -96,4 +96,10 @@ public class JwtTokenProvider {
         }
     }
 
+
+    public String getEmailFromToken(String accessToken) {
+        String email =  Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(accessToken).getBody().getSubject();
+        log.info("getEmailFromToken에서 추출한 이메일 : " + email);
+        return email;
+    }
 }
