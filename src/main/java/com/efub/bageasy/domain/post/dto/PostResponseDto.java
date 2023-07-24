@@ -49,7 +49,7 @@ public class PostResponseDto {
         }
     }
 
-    public PostResponseDto(Post post, List<Image> images, Member member , String buyerNickname, Long heartCount){
+    public PostResponseDto(Post post, List<Image> images, Member member, String buyerNickname, Long heartCount){
         this.postId=post.getPostId();
         this.sellerId = member.getMemberId();
         this.sellerNickname = member.getNickname();

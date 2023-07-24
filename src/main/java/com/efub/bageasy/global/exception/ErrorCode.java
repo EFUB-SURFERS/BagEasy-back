@@ -18,6 +18,8 @@ public enum ErrorCode {
     NO_MEMBER_EXIST(HttpStatus.BAD_REQUEST, "가입되지 않은 회원입니다."),
 
     DUPLICATE_NICKNAME(HttpStatus.BAD_REQUEST, "이미 존재하는 닉네임입니다."),
+    ALREADY_LIKED(HttpStatus.BAD_REQUEST, "이미 찜한 게시글입니다."),
+    NOT_LIKED(HttpStatus.BAD_REQUEST, "찜하지 않은 게시글입니다."),
     HEART_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 하트입니다"),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다"),
 
