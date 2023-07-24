@@ -62,8 +62,9 @@ public class PostController {
                                          @PathVariable Long postId,
                                          @RequestPart(value="dto") PostUpdateRequestDto requestDto,
                                          @RequestPart(value="addImage") List<MultipartFile> addImages) throws IOException {
+
         //이미지 삭제
-        List<Image> deleteImageList = imageService.findImageList(requestDto.getImageIdList());
+        List<Image> deleteImageList = imageService.findPostImage(postService.findPost(postId));
         List<String> deleteImageUrlList = new ArrayList<>();
         for(Image image:deleteImageList){
             deleteImageUrlList.add(image.getImageUrl());
