@@ -81,8 +81,9 @@ public class PostController {
         String buyerNickName = null;
         if(post.getBuyerId() != null) buyerNickName = memberService.findNicknameById(post.getBuyerId());
         List<Image> imageList = imageService.findPostImage(post);
+        Long heartCount = postService.countHeart(post.getPostId());
 
-        return new PostResponseDto(post,imageList,member,buyerNickName);
+        return new PostResponseDto(post, imageList, member, buyerNickName, heartCount);
 
     }
 
@@ -98,8 +99,9 @@ public class PostController {
         Post post = postService.findPost(postId);
         List<Image>imageList = imageService.findPostImage(post);
         String buyerNickname = memberService.findNicknameById(requestDto.getBuyerId());
+        Long heartCount = postService.countHeart(post.getPostId());
 
-        PostResponseDto responseDto = new PostResponseDto(post,imageList, member , buyerNickname);
+        PostResponseDto responseDto = new PostResponseDto(post, imageList, member, buyerNickname, heartCount);
         return responseDto;
     }
 
@@ -114,12 +116,13 @@ public class PostController {
         for(Post post:posts){
             Member member = memberService.findMemberById(post.getMemberId());
             String buyerNickname = null;
+            Long heartCount = postService.countHeart(post.getPostId());
             if(post.getBuyerId() != null){
                 buyerNickname = memberService.findNicknameById(post.getBuyerId());
             }
 
             List<Image> images = imageService.findPostImage(post);
-            responseDtoList.add(new PostResponseDto(post,images, member,buyerNickname));
+            responseDtoList.add(new PostResponseDto(post, images, member, buyerNickname, heartCount));
         }
 
         return responseDtoList;
@@ -137,8 +140,9 @@ public class PostController {
         if(post.getBuyerId() != null) buyerNickName = memberService.findNicknameById(post.getBuyerId());
 
         List<Image> images = imageService.findPostImage(post);
+        Long heartCount = postService.countHeart(post.getPostId());
 
-        PostResponseDto responseDto = new PostResponseDto(post,images, member , buyerNickName);
+        PostResponseDto responseDto = new PostResponseDto(post, images, member, buyerNickName, heartCount);
         return responseDto;
 
     }

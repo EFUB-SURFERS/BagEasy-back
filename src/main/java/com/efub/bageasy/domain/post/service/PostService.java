@@ -29,6 +29,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final ImageRepository imageRepository;
+    private final HeartRepository heartRepository;
 
     @Autowired
     private final S3Service s3Service;
@@ -110,5 +111,9 @@ public class PostService {
     public void deletePost(Member member, Long postId) {
         Post post=findPost(postId);
         postRepository.delete(post);
+    }
+
+    public Long countHeart(Long postId){
+        return heartRepository.countByPostId(postId);
     }
 }
