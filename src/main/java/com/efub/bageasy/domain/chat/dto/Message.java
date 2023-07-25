@@ -27,11 +27,13 @@ public class Message implements Serializable {
     @NotNull
     private String content;
 
+
     private String nickname;
     private Long senderId;
 
     private Long sentAt;
 
+    @NotNull
     private int type;
 
     public void setSendTimeAndSender(LocalDateTime sentAt, Long senderId, String nickname ){
