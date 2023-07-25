@@ -4,11 +4,13 @@ import com.efub.bageasy.global.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Getter
 public class Heart extends BaseTimeEntity {
     @Id
@@ -21,4 +23,9 @@ public class Heart extends BaseTimeEntity {
 
     @Column(name = "post_id", nullable = false)
     private Long postId;
+
+    public Heart(Long memberId, Long postId){
+        this.memberId = memberId;
+        this.postId = postId;
+    }
 }
