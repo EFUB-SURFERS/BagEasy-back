@@ -23,7 +23,8 @@ public class PostUpdateRequestDto {
     private  String postContent;
     private Long price;
 
-    private List<Long> imageIdList = new ArrayList<>(); // 삭제할 이미지의 id
+    private String school;
+
 
 
 

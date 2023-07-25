@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ReplyRepository extends JpaRepository<Reply,Long> {
 
-    List<Reply> findAllByCommentId(Long commentId);
     List<Reply> findAllByCommentIdOrderByCreatedAt(Long commentId);
+
 }
