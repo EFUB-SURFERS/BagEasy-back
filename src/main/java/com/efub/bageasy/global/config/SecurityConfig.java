@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .headers().frameOptions().disable()
                 .and().authorizeHttpRequests()
                 .antMatchers("/members/**").permitAll()
-
+                .antMatchers("/chat/**").permitAll()
                 .anyRequest().permitAll()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
