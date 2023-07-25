@@ -5,28 +5,31 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.ZoneId;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatResponseDto {
     private String id;
     private Long roomId;
     private Long senderId;
-    private Long nickname;
+    private String nickname;
+
+    private int type;
     private String contentType;
     private String content;
     private long sentAt;
-    private int readCount;
     private boolean isMine; //유저가 보낸 메세지인지
 
     public ChatResponseDto(Chat chat, Long memberId) {
-        this.id = id;
-        this.roomId = roomId;
-        this.senderId = senderId;
-        this.nickname = nickname;
-        this.contentType = contentType;
-        this.content = content;
-        this.sentAt = sentAt;
-        this.readCount = readCount;
-        this.isMine = isMine;
+        this.id = chat.getId();
+        this.roomId = chat.getRoomId();
+        this.senderId = chat.getSenderId();
+        this.nickname = chat.getNickname();
+        this.contentType = chat.getContentType();
+        this.type = chat.getType();
+        this.content = chat.getContent();
+        this.sentAt = chat.getSentAt().atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
+        this.isMine = memberId.equals(senderId);
     }
 }

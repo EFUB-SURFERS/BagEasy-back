@@ -17,6 +17,7 @@ import java.time.ZoneId;
 public class Message implements Serializable {
     private String id;
 
+
     @NotNull
     private Long roomId;
 
@@ -31,7 +32,6 @@ public class Message implements Serializable {
 
     private Long sentAt;
 
-    private Integer readCount;
     private int type;
 
     public void setSendTimeAndSender(LocalDateTime sentAt, Long senderId, String nickname ){

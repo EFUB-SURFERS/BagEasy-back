@@ -2,10 +2,7 @@ package com.efub.bageasy.domain.chat.controller;
 
 import com.efub.bageasy.domain.chat.dto.Message;
 import com.efub.bageasy.domain.chat.dto.request.RoomCreateRequest;
-import com.efub.bageasy.domain.chat.dto.response.ChatResponseDto;
-import com.efub.bageasy.domain.chat.dto.response.ChatRoomRecordDto;
-import com.efub.bageasy.domain.chat.dto.response.ChatRoomResponseDto;
-import com.efub.bageasy.domain.chat.dto.response.RoomCreateResponse;
+import com.efub.bageasy.domain.chat.dto.response.*;
 import com.efub.bageasy.domain.chat.service.ChatService;
 import com.efub.bageasy.domain.chat.service.ChatRoomService;
 import com.efub.bageasy.domain.member.domain.Member;
@@ -59,4 +56,19 @@ public class ChatController {
        List<ChatRoomResponseDto> chatRoomList = chatService.getChatRoomList(member);
         return ResponseEntity.ok(chatRoomList);
     }
+
+    /* 채팅방 정보 조회 */
+    @GetMapping("/chatrooms/info/{roodId}")
+    public ResponseEntity<RoomInfoDto> getRoomInfoById(@PathVariable Long roomId){
+        RoomInfoDto roomInfoDto = chatService.getRoomInfo(roomId);
+        return ResponseEntity.ok(roomInfoDto);
+    }
+
+    @PostMapping("/chatroom/callback")
+    public ResponseEntity<Message> saveMessage(@Valid @RequestBody Message message){
+        Message savedMessaage = chatService.saveMessage(message);
+        return ResponseEntity.ok(savedMessaage);
+    }
+
+
 }

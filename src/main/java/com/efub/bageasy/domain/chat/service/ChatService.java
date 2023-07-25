@@ -4,10 +4,7 @@ import com.efub.bageasy.domain.chat.domain.Chat;
 import com.efub.bageasy.domain.chat.domain.Room;
 import com.efub.bageasy.domain.chat.dto.Message;
 import com.efub.bageasy.domain.chat.dto.request.RoomCreateRequest;
-import com.efub.bageasy.domain.chat.dto.response.ChatResponseDto;
-import com.efub.bageasy.domain.chat.dto.response.ChatRoomRecordDto;
-import com.efub.bageasy.domain.chat.dto.response.ChatRoomResponseDto;
-import com.efub.bageasy.domain.chat.dto.response.RoomCreateResponse;
+import com.efub.bageasy.domain.chat.dto.response.*;
 import com.efub.bageasy.domain.chat.mongo.MongoChatRepository;
 import com.efub.bageasy.domain.chat.repository.ChatQuerydslRepository;
 import com.efub.bageasy.domain.chat.repository.RoomRepository;
@@ -133,4 +130,27 @@ public class ChatService {
     }
 
 
+    @Transactional(readOnly = true)
+    public RoomInfoDto getRoomInfo(Long roomId) {
+        Room room = roomRepository.findByRoomId(roomId).orElseThrow(()-> new CustomException(ErrorCode.ROOM_NOT_EXIST));
+        String createMember = memberRepository.findByMemberId(room.getBuyerId()).get().getNickname();
+        String joinMember = memberRepository.findByMemberId(room.getSellerId()).get().getNickname();
+
+        RoomInfoDto roomInfoDto =  RoomInfoDto.builder()
+                .room(room)
+                .joinMember(joinMember)
+                .createMember(createMember)
+                .build();
+
+        return roomInfoDto;
+
+    }
+
+    public Message saveMessage(Message message) {
+        Member member = memberRepository.findByMemberId(message.getSenderId()).orElseThrow(()->new CustomException(ErrorCode.NO_MEMBER_EXIST));
+        Chat chat = message.convertEntity();
+        Chat savedChat = mongoChatRepository.save(chat);
+        message.setId(savedChat.getId());
+        return message;
+    }
 }
