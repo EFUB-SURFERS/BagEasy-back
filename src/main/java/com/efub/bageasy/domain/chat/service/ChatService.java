@@ -105,7 +105,6 @@ public class ChatService {
 
     public List<ChatRoomResponseDto> getChatRoomList(Member member) {
         List<Room> chatRooms = chatQuerydslRepository.getChatRooms(member.getMemberId());
-        log.info(String.valueOf(chatRooms.get(0).getRoomId()));
 
         List<ChatRoomResponseDto> chatRoomList = new ArrayList<>();
 
