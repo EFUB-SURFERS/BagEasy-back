@@ -58,13 +58,14 @@ public class ChatController {
     }
 
     /* 채팅방 정보 조회 */
-    @GetMapping("/chatrooms/info/{roodId}")
+    @GetMapping("/chatrooms/info/{roomId}")
     public ResponseEntity<RoomInfoDto> getRoomInfoById(@PathVariable Long roomId){
         RoomInfoDto roomInfoDto = chatService.getRoomInfo(roomId);
         return ResponseEntity.ok(roomInfoDto);
     }
 
-    @PostMapping("/chatroom/callback")
+    /* 채팅 메세지 저장 */
+    @PostMapping("/chatrooms/callback")
     public ResponseEntity<Message> saveMessage(@Valid @RequestBody Message message){
         Message savedMessaage = chatService.saveMessage(message);
         return ResponseEntity.ok(savedMessaage);

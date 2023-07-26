@@ -29,17 +29,15 @@ public class Message implements Serializable {
 
 
     private String nickname;
-    private Long senderId;
 
     private Long sentAt;
 
     @NotNull
     private int type;
 
-    public void setSendTimeAndSender(LocalDateTime sentAt, Long senderId, String nickname ){
+    public void setSendTimeAndSender(LocalDateTime sentAt, String nickname ){
         this.nickname = nickname;
         this.sentAt = sentAt.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
-        this.senderId = senderId;
 //        this.readCount = readCount;
     }
 
@@ -50,7 +48,6 @@ public class Message implements Serializable {
     public Chat convertEntity(){
         return Chat.builder()
                 .nickname(nickname)
-                .senderId(senderId)
                 .roomId(roomId)
                 .type(type)
                 .contentType(contentType)
