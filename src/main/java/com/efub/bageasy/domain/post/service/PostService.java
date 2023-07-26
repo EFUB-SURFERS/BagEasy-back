@@ -36,8 +36,6 @@ public class PostService {
 
     @Transactional
     public Post addPost(Member member, PostRequestDto requestDto , List<String> imgPaths) throws IOException {
-
-
         String title = requestDto.getPostTitle();
         String content = requestDto.getPostContent();
         Long price = requestDto.getPrice();
