@@ -40,6 +40,7 @@ public class StompHandler implements ChannelInterceptor {
     private void handleMessage(StompCommand stompCommand, StompHeaderAccessor accessor, String email){
         switch (stompCommand){
             case CONNECT:
+                log.info("websocket connected!!");
                 connectToChatRoom(accessor, email);
                 break;
             case SUBSCRIBE:

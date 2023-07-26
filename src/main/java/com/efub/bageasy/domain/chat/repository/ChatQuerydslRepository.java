@@ -1,5 +1,6 @@
 package com.efub.bageasy.domain.chat.repository;
 
+import com.efub.bageasy.domain.chat.domain.QRoom;
 import com.efub.bageasy.domain.chat.dto.response.ChatRoomResponseDto;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
@@ -27,29 +28,39 @@ public class ChatQuerydslRepository {
     private EntityManager em;
 
     @Transactional(readOnly = true)
-    public List<ChatRoomResponseDto> getChatRooms(Long memberId) {
+    public List<Room> getChatRooms(Long memberId){
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(em);
 
-        return jpaQueryFactory.select(Projections.constructor(ChatRoomResponseDto.class,
-                        room.roomId,
-                        room.buyerId.as("createMember"),
-                        room.sellerId.as("joinMember"),
-                        room.postId,
-                        Projections.constructor(ChatRoomResponseDto.Participant.class,
-                                ExpressionUtils.as(
-                                        JPAExpressions.select(member.nickname)
-                                                .from(member)
-                                                .where(member.memberId.eq(
-                                                        new CaseBuilder()
-                                                                .when(room.buyerId.eq(memberId)).then(room.sellerId)
-                                                                .otherwise(room.buyerId)
-
-                                                )),"nickname")
-                                )))
+        return jpaQueryFactory.select(room)
                 .from(room)
                 .where(room.buyerId.eq(memberId).or(room.sellerId.eq(memberId)))
                 .fetch();
     }
+
+//    @Transactional(readOnly = true)
+//    public List<ChatRoomResponseDto> getChatRooms(Long memberId) {
+//        JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(em);
+//
+//        return jpaQueryFactory.select(Projections.constructor(ChatRoomResponseDto.class,
+//                        room.roomId,
+//                        room.buyerId.as("createMember"),
+//                        room.sellerId.as("joinMember"),
+//                        room.postId,
+//                        Projections.constructor(ChatRoomResponseDto.Participant.class,
+//                                ExpressionUtils.as(
+//                                        JPAExpressions.select(member.nickname)
+//                                                .from(member)
+//                                                .where(member.memberId.eq(
+//                                                        new CaseBuilder()
+//                                                                .when(room.buyerId.eq(memberId)).then(room.sellerId)
+//                                                                .otherwise(room.buyerId)
+//
+//                                                )),"nickname")
+//                                )))
+//                .from(room)
+//                .where(room.buyerId.eq(memberId).or(room.sellerId.eq(memberId)))
+//                .fetch();
+//    }
 
 
 }

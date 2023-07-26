@@ -14,7 +14,6 @@ public class Chat {
     @Id
     private String id;
     private Long roomId;
-    private Long senderId;
     private String nickname;
     private int type;  // text:0, image:1
     private String contentType; // notice 또는 talk
