@@ -99,10 +99,10 @@ public class PostController {
     }
 
     //학교로 양도글 리스트 조회
-    @GetMapping( "/{school}")
+    @PostMapping("/school")
     @ResponseStatus(HttpStatus.OK)
-    public List<PostResponseDto> getPostListBySchool(@PathVariable String school){
-        return postService.findPostListBySchool(school);
+    public List<PostResponseDto> getPostListBySchool(@RequestBody PostSchoolRequestDto requestDto){
+        return postService.findPostListBySchool(requestDto.getSchoolName());
     }
 
 
