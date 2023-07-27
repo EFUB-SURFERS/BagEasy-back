@@ -103,8 +103,11 @@ public class JwtTokenProvider {
     }
 
 
-    public String getEmailFromToken(String accessToken) {
+    public String getNicknameFromToken(String accessToken) {
         String email =  Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(accessToken).getBody().getSubject();
-        return email;
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(()-> new CustomException(ErrorCode.NO_MEMBER_EXIST));
+        String nickname = member.getNickname();
+        return nickname;
     }
 }

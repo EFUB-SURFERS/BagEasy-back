@@ -10,7 +10,9 @@ import com.efub.bageasy.global.config.AuthUser;
 import com.efub.bageasy.global.exception.CustomException;
 import com.efub.bageasy.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.validation.BindingResult;
@@ -21,6 +23,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class ChatController {
     private final ChatService chatService;
     private final ChatRoomService chatRoomService;
@@ -39,8 +42,8 @@ public class ChatController {
 
     /* 메세지 전송 */
     @MessageMapping("/message")
-    public void sendMessage(@Valid Message message, @AuthUser Member member){
-        chatService.sendMessage(message,member);
+    public void sendMessage(@Valid Message message, @Header("Authorization") final String token){
+        chatService.sendMessage(message,token);
     }
 
     /* 채팅 리스트 조회 */

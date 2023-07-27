@@ -10,6 +10,7 @@ import com.efub.bageasy.domain.chat.repository.ChatQuerydslRepository;
 import com.efub.bageasy.domain.chat.repository.RoomRepository;
 import com.efub.bageasy.domain.member.domain.Member;
 import com.efub.bageasy.domain.member.repository.MemberRepository;
+import com.efub.bageasy.domain.member.service.JwtTokenProvider;
 import com.efub.bageasy.domain.post.domain.Post;
 import com.efub.bageasy.domain.post.repository.PostRepository;
 import com.efub.bageasy.global.config.kafka.KafkaConstants;
@@ -45,6 +46,7 @@ public class ChatService {
     private final KafkaProducer kafkaProducer;
     private final MongoTemplate mongoTemplate;
     private final KafkaConstants kafkaConstants;
+    private final JwtTokenProvider tokenProvider;
 
     public RoomCreateResponse makeChatRoom(Long memberId, RoomCreateRequest roomCreateRequest) {
         Post post = postRepository.findPostByPostId(roomCreateRequest.getPostId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_EXIST));
@@ -75,10 +77,11 @@ public class ChatService {
         return new RoomCreateResponse(room);
     }
 
-    public void sendMessage(Message message, Member member){
+    public void sendMessage(Message message, String token){
 //        boolean isConnectAll = chatRoomService.isAllConnected(message.getRoomId());
 //        Integer readCount = isConnectAll ? 0 : 1;
-        message.setSendTimeAndSender(LocalDateTime.now(), member.getNickname());
+        String nickname = tokenProvider.getNicknameFromToken(token);
+        message.setSendTimeAndSender(LocalDateTime.now(), nickname);
         kafkaProducer.sendChat(kafkaConstants.getTopic(), message);
     }
 
@@ -147,11 +150,11 @@ public class ChatService {
 //        mongoTemplate.updateMulti(query, update, Chat.class);
 //    }
 
-    public void updateMessage(String email,Long roomId){
+    public void updateMessage(String nickname,Long roomId){
         Message message = Message.builder()
                 .contentType("notice")
                 .roomId(roomId)
-                .content(email + "님이 돌아오셨습니다.")
+                .content(nickname + "님이 돌아오셨습니다.")
                 .build();
 
         kafkaProducer.sendChat(kafkaConstants.getTopic(), message);
@@ -182,6 +185,7 @@ public class ChatService {
     public Message saveMessage(Message message) {
         Member member = memberRepository.findMemberByNickname(message.getNickname()).orElseThrow(()->new CustomException(ErrorCode.NO_MEMBER_EXIST));
         Chat chat = message.convertEntity();
+        log.info(String.valueOf(chat.getSentAt()));
         Chat savedChat = mongoChatRepository.save(chat);
         message.setId(savedChat.getId());
         return message;
