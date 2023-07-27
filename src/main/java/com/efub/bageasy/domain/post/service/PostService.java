@@ -107,7 +107,9 @@ public class PostService {
     }
 
     public void deletePost(Member member, Long postId) {
-        Post post=findPost(postId);
+        Post post = findPost(postId);
+        heartRepository.findByPostId(postId)
+                        .forEach(heartRepository::delete);
         postRepository.delete(post);
     }
 

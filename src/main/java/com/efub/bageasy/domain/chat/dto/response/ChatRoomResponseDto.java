@@ -1,5 +1,6 @@
 package com.efub.bageasy.domain.chat.dto.response;
 
+import com.efub.bageasy.domain.chat.domain.Room;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,13 +13,13 @@ import java.time.ZoneId;
 @ToString
 public class ChatRoomResponseDto {
     private Long roomId;
-    private Long createMember;
-    private Long joinMember;
+    private String createMember;
+    private String joinMember;
     private Long postId;
 
     private LatestMessage latestMessage;
 
-    private Participant participant;
+//    private Participant participant;
 //    private Integer unReadCount;
 
 //    public void setUnReadCount(Integer unReadCount){
@@ -29,26 +30,26 @@ public class ChatRoomResponseDto {
         this.latestMessage = latestMessage;
     }
 
-    public ChatRoomResponseDto(Long roomId, Long createMember, Long joinMember, Long postId, Participant participant ) {
-        this.roomId = roomId;
+    @Builder
+    public ChatRoomResponseDto(Room room, String createMember, String joinMember, LatestMessage latestMessage ) {
+        this.roomId = room.getRoomId();
         this.createMember = createMember;
         this.joinMember = joinMember;
-        this.postId = postId;
-        this.participant = participant;
+        this.postId = room.getPostId();
+        this.latestMessage = latestMessage;
 
     }
 
-    @Getter
-    @AllArgsConstructor
-    @ToString
-    public static class Participant{
-        private String nickname;
-    }
+//    @Getter
+//    @AllArgsConstructor
+//    @ToString
+//    public static class Participant{
+//        private String nickname;
+//    }
 
     @Getter
     @ToString
     public static class LatestMessage{
-        private String context;
         private long sentAt;
         private String content;
 

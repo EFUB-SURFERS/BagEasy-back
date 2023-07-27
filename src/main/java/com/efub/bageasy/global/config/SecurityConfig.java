@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .and().authorizeHttpRequests()
                 .antMatchers("/members/**").permitAll()
                 .antMatchers("/chat/**").permitAll()
+                .antMatchers("/chatrooms/**").permitAll()
                 .anyRequest().permitAll()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
