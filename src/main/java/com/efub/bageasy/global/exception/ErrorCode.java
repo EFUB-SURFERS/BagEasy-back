@@ -22,6 +22,7 @@ public enum ErrorCode {
     NOT_LIKED(HttpStatus.BAD_REQUEST, "찜하지 않은 게시글입니다."),
     HEART_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 하트입니다"),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다"),
+    INVALID_MEMBER(HttpStatus.BAD_REQUEST,"접근 권한이 없는 회원입니다."),
 
     FILE_CONVERT_ERROR(HttpStatus.BAD_REQUEST,"파일 전환에 실패하였습니다."),
     FILE_UPLOAD_ERROR(HttpStatus.BAD_REQUEST,"이미지 업로드에 실패하였습니다."),
@@ -30,6 +31,7 @@ public enum ErrorCode {
     //post
     POST_SOLDOUT(HttpStatus.BAD_REQUEST, "판매완료된 게시글입니다."),
     POST_NOT_EXIST(HttpStatus.BAD_REQUEST, "존재하지 않는 게시글입니다."),
+
 
     ARGUMENT_NOT_VALID(HttpStatus.BAD_REQUEST, "부적절한 argument입니다."),
 

@@ -5,5 +5,5 @@ import lombok.Getter;
 
 @Getter
 public class PostUpdateIsSoldRequestDto {
-    private Long buyerId;
+    private String buyerNickName;
 }

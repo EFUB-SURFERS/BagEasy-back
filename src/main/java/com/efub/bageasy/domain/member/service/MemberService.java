@@ -60,6 +60,7 @@ public class MemberService {
         return member.getNickname();
     }
 
+
     public Member updateNickname(NicknameRequestDto requestDto, Member member) {
         String nickname = requestDto.getNickname();
         if (memberRepository.existsMemberByNickname(nickname))
