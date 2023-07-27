@@ -53,37 +53,15 @@ public class PostController {
         return new PostResponseDto(post,imageList,member);
     }
 
-
-
     // 게시글 수정
     @PutMapping("/{postId}")
     @ResponseStatus(HttpStatus.OK)
     public PostResponseDto modifyPost(@AuthUser Member member,
                                          @PathVariable Long postId,
                                          @RequestPart(value="dto") PostUpdateRequestDto requestDto,
-                                         @RequestPart(value="addImage") List<MultipartFile> addImages) throws IOException {
+                                         @RequestPart(value="addImage" , required = false) List<MultipartFile> addImages) throws IOException {
 
-        //이미지 삭제
-        List<Image> deleteImageList = imageService.findPostImage(postService.findPost(postId));
-        List<String> deleteImageUrlList = new ArrayList<>();
-        for(Image image:deleteImageList){
-            deleteImageUrlList.add(image.getImageUrl());
-            s3Service.deleteImage(image.getImageUrl());
-        }
-
-        //이미지 업로드
-        List<String> imgPaths = s3Service.upload(addImages); // S3 에 추가 이미지 업로드
-
-        //게시글 수정
-        postService.updatePost(postId,requestDto,deleteImageList,imgPaths);
-
-        Post post=postService.findPost(postId);
-        String buyerNickName = null;
-        if(post.getBuyerId() != null) buyerNickName = memberService.findNicknameById(post.getBuyerId());
-        List<Image> imageList = imageService.findPostImage(post);
-        Long heartCount = postService.countHeart(post.getPostId());
-
-        return new PostResponseDto(post, imageList, member, buyerNickName, heartCount);
+        return postService.updatePost(member,postId,requestDto,addImages);
 
     }
 
@@ -94,17 +72,9 @@ public class PostController {
     public PostResponseDto updateIsSold(@AuthUser Member member,
                                         @PathVariable Long postId,
                                         @RequestBody @Valid PostUpdateIsSoldRequestDto requestDto){
+        return postService.updateIsSold(requestDto,postId,member);
 
-        postService.updateIsSold(requestDto,postId,member);
-        Post post = postService.findPost(postId);
-        List<Image>imageList = imageService.findPostImage(post);
-        String buyerNickname = memberService.findNicknameById(requestDto.getBuyerId());
-        Long heartCount = postService.countHeart(post.getPostId());
-
-        PostResponseDto responseDto = new PostResponseDto(post, imageList, member, buyerNickname, heartCount);
-        return responseDto;
     }
-
 
     // 전체 게시글 리스트 조회
     @GetMapping
@@ -128,6 +98,21 @@ public class PostController {
         return responseDtoList;
     }
 
+    //학교로 양도글 리스트 조회
+    @GetMapping( "/{school}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<PostResponseDto> getPostListBySchool(@PathVariable String school){
+        return postService.findPostListBySchool(school);
+    }
+
+
+    //판매중인 게시글만 조회
+    @GetMapping("/sales")
+    @ResponseStatus(HttpStatus.OK)
+    public List<PostResponseDto> getPostListNotSold(){
+        return postService.findPostListNotSold();
+    }
+
 
     // 게시글 조회 : 1개
     @GetMapping("/{postId}")
@@ -146,6 +131,9 @@ public class PostController {
         return responseDto;
 
     }
+
+
+
 
     //게시글 삭제
     @DeleteMapping("/{postId}")
