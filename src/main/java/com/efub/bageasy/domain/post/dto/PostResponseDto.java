@@ -18,7 +18,6 @@ import java.util.List;
 @Builder
 public class PostResponseDto {
     private Long postId;
-    private Long sellerId;
     private String sellerNickname;
     private String postTitle;
     private String postContent;
@@ -35,7 +34,6 @@ public class PostResponseDto {
     public PostResponseDto(Post post, List<Image> images, Member member){
 
         this.postId=post.getPostId();
-        this.sellerId= member.getMemberId();
         this.sellerNickname = member.getNickname();
         this.postTitle=post.getTitle();
         this.postContent=post.getContent();
@@ -51,7 +49,6 @@ public class PostResponseDto {
 
     public PostResponseDto(Post post, List<Image> images, Member member, String buyerNickname, Long heartCount){
         this.postId=post.getPostId();
-        this.sellerId = member.getMemberId();
         this.sellerNickname = member.getNickname();
         this.postTitle=post.getTitle();
         this.postContent=post.getContent();
