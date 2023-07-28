@@ -15,7 +15,6 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 @EnableWebSocketMessageBroker
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
     private final StompHandler stompHandler;
-
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint(("/chat"))
@@ -34,10 +33,14 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
         registration.interceptors(stompHandler); //stomp 메시지 핸들링
     }
 
+    // 이미지 전송을 위해 메시지 크기 제한 늘림
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration registry) {
-        registry.setMessageSizeLimit(160 * 64 * 1024);
-        registry.setSendTimeLimit(100 * 10000);
-        registry.setSendBufferSizeLimit(3 * 512 * 1024);
+        registry.setMessageSizeLimit(20 * 1024 * 1024);
+        registry.setSendBufferSizeLimit(1024 * 1024 * 20);
+        registry.setSendTimeLimit(20000);
+//        registry.setDecoratorFactories(decoratorFactory)
+//                .setTimeToFirstMessage(30 * 60 * 10000) // 1초
+//                .setSendTimeLimit(30 * 60 * 10000); // 30분
     }
 }
