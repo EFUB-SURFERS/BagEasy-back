@@ -32,6 +32,8 @@ public class Message implements Serializable {
 
     private Long sentAt;
 
+    private String callbackNickname;
+
     @NotNull
     private int type;
 

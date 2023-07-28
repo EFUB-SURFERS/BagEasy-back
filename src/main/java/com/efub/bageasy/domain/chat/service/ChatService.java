@@ -20,10 +20,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,9 +38,7 @@ public class ChatService {
     private final MemberRepository memberRepository;
     private final MongoChatRepository mongoChatRepository;
     private final ChatQuerydslRepository chatQuerydslRepository;
-    private final ChatRoomService chatRoomService;
     private final KafkaProducer kafkaProducer;
-    private final MongoTemplate mongoTemplate;
     private final KafkaConstants kafkaConstants;
     private final JwtTokenProvider tokenProvider;
 
@@ -74,7 +68,7 @@ public class ChatService {
 
         Room savedRoom = roomRepository.save(room);
 //        kafkaProducer.sendChat("kafka_chat", );
-        return new RoomCreateResponse(room);
+        return new RoomCreateResponse(savedRoom);
     }
 
     public void sendMessage(Message message, String token){
@@ -182,12 +176,17 @@ public class ChatService {
 
     }
 
+    // 실제 메시지 발신인과 callback으로 메시지 저장을 요청한 사람이 일치해야만 db에 저장하여 중복 방지
     public Message saveMessage(Message message) {
-        Member member = memberRepository.findMemberByNickname(message.getNickname()).orElseThrow(()->new CustomException(ErrorCode.NO_MEMBER_EXIST));
-        Chat chat = message.convertEntity();
-        log.info(String.valueOf(chat.getSentAt()));
-        Chat savedChat = mongoChatRepository.save(chat);
-        message.setId(savedChat.getId());
+        if(!memberRepository.existsMemberByNickname(message.getNickname())){
+            throw new CustomException(ErrorCode.NO_MEMBER_EXIST);
+        }
+        if(message.getNickname().equals(message.getCallbackNickname())){
+            Chat chat = message.convertEntity();
+            log.info(String.valueOf(chat.getSentAt()));
+            Chat savedChat = mongoChatRepository.save(chat);
+            message.setId(savedChat.getId());
+        }
         return message;
     }
 }
