@@ -98,7 +98,7 @@ public class PostService {
                 .orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_EXIST));
 
         //양도글 작성자 외의 회원이 수정을 시도할 경우
-        if(post.getBuyerId() != member.getMemberId()){
+        if(post.getMemberId() != member.getMemberId()){
             throw new CustomException(ErrorCode.INVALID_MEMBER);
         }
 
