@@ -101,7 +101,6 @@ public class AuthService {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.postForEntity(GOOGLE_TOKEN_REQUEST_URL,
                 params, String.class);
-        System.out.println("response.getBody() = " + response.getBody());
 
         ObjectMapper objectMapper = new ObjectMapper();
         GoogleOAuthToken googleOAuthToken = objectMapper.readValue(response.getBody(), GoogleOAuthToken.class);
@@ -120,7 +119,6 @@ public class AuthService {
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(GOOGLE_USERINFO_REQUEST_URL, HttpMethod.GET, request, String.class);
-        System.out.println("response.getBody() = " + response.getBody());
 
         ObjectMapper objectMapper = new ObjectMapper();
         GoogleUser googleUser = objectMapper.readValue(response.getBody(), GoogleUser.class);

@@ -9,6 +9,10 @@ on:
 
 
 env:
+  AWS_REGION: ap-northeast-2
+  S3_BUCKET_NAME: bageasy-github-actions-s3-bucket
+  CODE_DEPLOY_APPLICATION_NAME: bageasy-codedeploy-app
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: bageasy-codedeploy-deployment-group
   APPLICATION: ${{ secrets.APPLICATION }}
 
 jobs:
@@ -43,24 +47,36 @@ jobs:
         with:
           arguments: clean build -x test
 
-        ## 웹 이미지 빌드 및 도커허브에 push
-      - name: web docker build and push
+      - name: Make zip file
         run: |
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/bageasy .
-          docker push ${{ secrets.DOCKER_USERNAME }}/bageasy
+          mkdir deploy
+          cp ./docker-compose.blue.yml ./deploy/
+          cp ./docker-compose.green.yml ./deploy/
+          cp ./appspec.yml ./deploy/
+          cp ./Dockerfile ./deploy/
+          cp ./scripts/*.sh ./deploy/
+          cp ./build/libs/*.jar ./deploy/
+          zip -r -qq -j ./spring-build.zip ./deploy
 
-        ## docker compose up
-      - name: executing remote ssh commands using password
-        uses: appleboy/ssh-action@v0.1.10
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          host: ${{ secrets.HOST }}
-          username: ubuntu
-          key: ${{ secrets.KEY }}
-          script: |
-            sudo docker stop BagEasySpring && sudo docker rm BagEasySpring
-            sudo docker rmi -f ${{ secrets.DOCKER_USERNAME }}/bageasy
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/bageasy
-            sudo docker run -d --log-driver=syslog -p 80:8080  --name BagEasySpring ${{ secrets.DOCKER_USERNAME }}/bageasy
-            sudo docker rm $(docker ps --filter 'status=exited' -a -q)
-            docker image prune -f
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Upload to AWS S3
+        run: |
+          aws deploy push \
+            --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+            --ignore-hidden-files \
+            --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
+            --source .
+
+      - name: Deploy to AWS EC2 from S3
+        run: |
+          aws deploy create-deployment \
+            --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+            --deployment-config-name CodeDeployDefault.AllAtOnce \
+            --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+            --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip

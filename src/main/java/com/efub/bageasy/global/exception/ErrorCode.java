@@ -16,6 +16,7 @@ public enum ErrorCode {
     //Member
     NO_MEMBER_EXIST(HttpStatus.BAD_REQUEST, "가입되지 않은 회원입니다."),
     DUPLICATE_NICKNAME(HttpStatus.BAD_REQUEST, "이미 존재하는 닉네임입니다."),
+    INVALID_MEMBER(HttpStatus.BAD_REQUEST,"접근 권한이 없는 회원입니다."),
 
     //Post & Heart
     ALREADY_LIKED(HttpStatus.BAD_REQUEST, "이미 찜한 게시글입니다."),
