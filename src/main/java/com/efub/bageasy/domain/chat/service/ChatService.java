@@ -169,7 +169,7 @@ public class ChatService {
             if (chatting.hasContent()) {
                 Chat chat = chatting.getContent().get(0);
                 ChatRoomResponseDto.LatestMessage latestMessage = ChatRoomResponseDto.LatestMessage.builder()
-                        .content(chat.getContent())
+                        .content(chat.getType()==1 ? "(사진)" : chat.getContent())
                         .sentAt(chat.getSentAt())
                         .build();
                 String createMember = memberRepository.findByMemberId(room.getBuyerId())
