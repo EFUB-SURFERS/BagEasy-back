@@ -35,7 +35,8 @@ public enum ErrorCode {
 
     //chat
     ROOM_NOT_EXIST(HttpStatus.BAD_REQUEST, "존재하지 않는 채팅방입니다."),
-    ROOM_MEMBER_DUPLICATE(HttpStatus.BAD_REQUEST, "본인을 채팅방에 초대할 수 없습니다.");
+    ROOM_MEMBER_DUPLICATE(HttpStatus.BAD_REQUEST, "본인을 채팅방에 초대할 수 없습니다."),
+    ROOM_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "이미 존재하는 채팅방입니다.");
 
 
 
