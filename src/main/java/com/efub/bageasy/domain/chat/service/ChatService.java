@@ -1,5 +1,8 @@
 package com.efub.bageasy.domain.chat.service;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.efub.bageasy.domain.chat.domain.Chat;
 import com.efub.bageasy.domain.chat.domain.Room;
 import com.efub.bageasy.domain.chat.dto.Message;
@@ -18,14 +21,17 @@ import com.efub.bageasy.global.exception.CustomException;
 import com.efub.bageasy.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+
+import java.io.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +47,10 @@ public class ChatService {
     private final KafkaProducer kafkaProducer;
     private final KafkaConstants kafkaConstants;
     private final JwtTokenProvider tokenProvider;
+    private final AmazonS3Client amazonS3Client;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     public RoomCreateResponse makeChatRoom(Long memberId, RoomCreateRequest roomCreateRequest) {
         Post post = postRepository.findPostByPostId(roomCreateRequest.getPostId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_EXIST));
@@ -71,11 +81,59 @@ public class ChatService {
         return new RoomCreateResponse(savedRoom);
     }
 
-    public void sendMessage(Message message, String token){
+    public void sendMessage(Message message, String token) throws IOException {
 //        boolean isConnectAll = chatRoomService.isAllConnected(message.getRoomId());
 //        Integer readCount = isConnectAll ? 0 : 1;
+
+        //메세지 발신자 닉네임과 발신시간 설정
         String nickname = tokenProvider.getNicknameFromToken(token);
         message.setSendTimeAndSender(LocalDateTime.now(), nickname);
+
+        //메세지 타입이 이미지인 경우 (type == 1)
+        if (message.getType() == 1) {
+            String[] strings = message.getContent().split(",");
+
+            String base64Image = strings[1];
+
+            //파일 확장자 결정
+            String extension = "";
+            if (strings[0].equals("data:image/jpeg;base64")) {
+                extension = "jpeg";
+            } else if (strings[0].equals("data:image/png;base64")){
+                extension = "png";
+            } else {
+                extension = "jpg";
+            }
+
+            byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image);
+            File tempFile = File.createTempFile("image", "." + extension);
+
+            try (OutputStream outputStream = new FileOutputStream(tempFile)) {
+                outputStream.write(imageBytes);
+            }
+
+            String fileName = message.getNickname()+'/'+(UUID.randomUUID().toString());
+
+            //s3 업로드
+            amazonS3Client.putObject(new PutObjectRequest(bucket + "/chat/image", fileName, tempFile).withCannedAcl(CannedAccessControlList.PublicRead));
+            String uploadedImg = amazonS3Client.getUrl(bucket + "/chat/image", fileName).toString();
+
+            //temp 파일 삭제
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
+                fileOutputStream.close(); // 아웃풋 닫아주기
+                if (tempFile.delete()) {
+                    log.info("File delete success");
+                } else {
+                    log.info("File delete fail");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            message.setImageUrl(uploadedImg);
+        }
+
         kafkaProducer.sendChat(kafkaConstants.getTopic(), message);
     }
 
@@ -130,7 +188,7 @@ public class ChatService {
             }
         }
 
-        log.info(String.valueOf(chatRoomList.size()));
+        chatRoomList.sort(Comparator.comparing(ChatRoomResponseDto::getLatestMessage, Comparator.comparing(ChatRoomResponseDto.LatestMessage::getSentAt)).reversed());
 
         return chatRoomList;
     }
@@ -188,4 +246,12 @@ public class ChatService {
         }
         return message;
     }
+
+    public String getFileName(String nickname) {
+        UUID uuid = UUID.randomUUID();
+        String imgFileName = nickname + "/" + uuid;
+        return imgFileName;
+
+    }
+
 }

@@ -37,10 +37,14 @@ public class Message implements Serializable {
     @NotNull
     private int type;
 
-    public void setSendTimeAndSender(LocalDateTime sentAt, String nickname ){
+    public void setSendTimeAndSender(LocalDateTime sentAt, String nickname){
         this.nickname = nickname;
         this.sentAt = sentAt.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
 //        this.readCount = readCount;
+    }
+
+    public void setImageUrl(String imgUrl){
+        this.content = imgUrl;
     }
 
     public void setId(String id){
