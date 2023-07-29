@@ -55,7 +55,7 @@ public class ChatService {
     private String bucket;
 
     public RoomCreateResponse makeChatRoom(Member member, RoomCreateRequest roomCreateRequest) {
-        Post post = postRepository.findPostByPostId(roomCreateRequest.getPostId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_EXIST));
+        Post post = postRepository.findPostByPostId(roomCreateRequest.getPostId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
         //판매완료된 게시글
         if(post.getIsSold()){
