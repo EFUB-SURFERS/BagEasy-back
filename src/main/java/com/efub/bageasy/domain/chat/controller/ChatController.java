@@ -14,11 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -42,7 +42,7 @@ public class ChatController {
 
     /* 메세지 전송 */
     @MessageMapping("/message")
-    public void sendMessage(@Valid Message message, @Header("Authorization") final String token){
+    public void sendMessage(@Valid Message message, @Header("Authorization") final String token) throws IOException {
         chatService.sendMessage(message,token);
     }
 
