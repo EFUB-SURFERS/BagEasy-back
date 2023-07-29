@@ -95,7 +95,7 @@ public class PostService {
     public PostResponseDto updatePost(Member member, Long postId, PostUpdateRequestDto requestDto, List<MultipartFile> addImages ) throws IOException {
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_EXIST));
+                .orElseThrow(()-> new CustomException(ErrorCode.POST_NOT_FOUND));
 
         //양도글 작성자 외의 회원이 수정을 시도할 경우
         if(post.getMemberId() != member.getMemberId()){
