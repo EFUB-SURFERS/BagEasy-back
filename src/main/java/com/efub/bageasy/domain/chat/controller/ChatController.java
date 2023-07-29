@@ -34,7 +34,7 @@ public class ChatController {
         if(bindingResult.hasErrors()){
             throw new CustomException(ErrorCode.ARGUMENT_NOT_VALID);
         }
-        RoomCreateResponse response = chatService.makeChatRoom(member.getMemberId(), roomCreateRequest);
+        RoomCreateResponse response = chatService.makeChatRoom(member, roomCreateRequest);
         return ResponseEntity.ok(response);
 
     }

@@ -10,6 +10,7 @@ import com.efub.bageasy.domain.chat.dto.request.RoomCreateRequest;
 import com.efub.bageasy.domain.chat.dto.response.*;
 import com.efub.bageasy.domain.chat.mongo.MongoChatRepository;
 import com.efub.bageasy.domain.chat.repository.ChatQuerydslRepository;
+import com.efub.bageasy.domain.chat.repository.RoomQuerydslRepository;
 import com.efub.bageasy.domain.chat.repository.RoomRepository;
 import com.efub.bageasy.domain.member.domain.Member;
 import com.efub.bageasy.domain.member.repository.MemberRepository;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
 public class ChatService {
     private final PostRepository postRepository;
     private final RoomRepository roomRepository;
+    private final RoomQuerydslRepository roomQuerydslRepository;
     private final MemberRepository memberRepository;
     private final MongoChatRepository mongoChatRepository;
     private final ChatQuerydslRepository chatQuerydslRepository;
@@ -52,21 +54,25 @@ public class ChatService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public RoomCreateResponse makeChatRoom(Long memberId, RoomCreateRequest roomCreateRequest) {
-        Post post = postRepository.findPostByPostId(roomCreateRequest.getPostId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_EXIST));
+    public RoomCreateResponse makeChatRoom(Member member, RoomCreateRequest roomCreateRequest) {
+        Post post = postRepository.findPostByPostId(roomCreateRequest.getPostId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
         //판매완료된 게시글
         if(post.getIsSold()){
             throw new CustomException(ErrorCode.POST_SOLDOUT);
         }
 
-
         //존재하지 않는 멤버 아이디
-        Member createMember = memberRepository.findMemberByNickname(roomCreateRequest.getCreateMember())
+        Member createMember = memberRepository.findMemberByNickname(member.getNickname())
                 .orElseThrow(() -> new CustomException(ErrorCode.NO_MEMBER_EXIST));
 
+        //이미 존재하는 채팅방
+        if(roomQuerydslRepository.isExistingRoom(member.getMemberId(), post.getMemberId(), post.getPostId()).equals(true)){
+            throw new CustomException(ErrorCode.ROOM_ALREADY_EXIST);
+        }
+
         //자기자신을 채팅방에 초대하는 경우
-        if(memberId.equals(post.getMemberId())){
+        if(member.getMemberId().equals(post.getMemberId())){
             throw new CustomException(ErrorCode.ROOM_MEMBER_DUPLICATE);
         }
 
@@ -168,7 +174,7 @@ public class ChatService {
             if (chatting.hasContent()) {
                 Chat chat = chatting.getContent().get(0);
                 ChatRoomResponseDto.LatestMessage latestMessage = ChatRoomResponseDto.LatestMessage.builder()
-                        .content(chat.getContent())
+                        .content(chat.getType()==1 ? "(사진)" : chat.getContent())
                         .sentAt(chat.getSentAt())
                         .build();
                 String createMember = memberRepository.findByMemberId(room.getBuyerId())
@@ -240,18 +246,11 @@ public class ChatService {
         }
         if(message.getNickname().equals(message.getCallbackNickname())){
             Chat chat = message.convertEntity();
-            log.info(String.valueOf(chat.getSentAt()));
             Chat savedChat = mongoChatRepository.save(chat);
             message.setId(savedChat.getId());
         }
         return message;
     }
 
-    public String getFileName(String nickname) {
-        UUID uuid = UUID.randomUUID();
-        String imgFileName = nickname + "/" + uuid;
-        return imgFileName;
-
-    }
 
 }
