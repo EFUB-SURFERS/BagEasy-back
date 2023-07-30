@@ -106,6 +106,20 @@ public class PostController {
         return postService.findPostListBySchool(requestDto.getSchoolName());
     }
 
+    //학교로 양도글 리스트 조회 - 판매중인 양도글만 조회
+    @PostMapping("/school/sales")
+    @ResponseStatus(HttpStatus.OK)
+    public List<PostResponseDto> getPostListBySchoolNotSold(@RequestBody PostSchoolRequestDto requestDto){
+        List<PostResponseDto> responseDtoListBySchool = postService.findPostListBySchool(requestDto.getSchoolName());
+        List<PostResponseDto> responseDtoList = new ArrayList<>();
+        for(PostResponseDto responseDto : responseDtoListBySchool){
+            if(responseDto.getIsSold() == false){
+                responseDtoList.add(responseDto);
+            }
+        }
+        return responseDtoList;
+    }
+
 
     //판매중인 게시글만 조회
     @GetMapping("/sales")
