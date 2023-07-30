@@ -45,6 +45,7 @@ public class PostController {
 
         Post post = postService.addPost(member,requestDto,imgPaths);
 
+
         List<Image> imageList = new ArrayList<>();
         for(String imageUrl : imgPaths){
             imageList.add(imageService.findImageByUrl(imageUrl));
