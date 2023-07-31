@@ -43,7 +43,7 @@ BagEasy의 백엔드 레포지토리
 <br>
 
 ## 💥 기술 아키텍처
-![](https://velog.velcdn.com/images/goinggoing/post/4d4c4f8d-cca1-4ab3-8a74-6fd114719db1/image.png)
+![](https://velog.velcdn.com/images/goinggoing/post/778c2851-338f-4a4b-ae37-4bcf38ea4448/image.png)
 
 <br>
 
