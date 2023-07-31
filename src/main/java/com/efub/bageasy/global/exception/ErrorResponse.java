@@ -21,6 +21,15 @@ public class ErrorResponse {
     }
 
     public static ResponseEntity<ErrorResponse> error(CustomException e) {
+        if(e.getInfo()!=null){
+            return ResponseEntity
+                    .status(e.getErrorCode().getStatus())
+                    .body(ErrorResponse.builder()
+                            .status(e.getErrorCode().getStatus())
+                            .code(e.getErrorCode().name())
+                            .message(e.getErrorCode().getMessage()+e.getInfo())
+                            .build());
+        }
         return ResponseEntity
                 .status(e.getErrorCode().getStatus())
                 .body(ErrorResponse.builder()
