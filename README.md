@@ -27,7 +27,7 @@ BagEasy의 백엔드 레포지토리
 |김예지|모수지|박가영|조현영|
 |---|---|---|---|
 |<img width="300px" alt="스크린샷 2023-07-25 오전 12 46 14" src="https://avatars.githubusercontent.com/u/121334671?v=4">|<img width="300px" alt="스크린샷 2023-07-25 오전 12 45 48" src="https://avatars.githubusercontent.com/u/108855492?v=4">|<img width="300px" alt="스크린샷 2023-07-25 오전 12 45 37" src="https://avatars.githubusercontent.com/u/87990290?v=4">|<img width="300px" alt="스크린샷 2023-07-25 오전 12 45 37" src="https://avatars.githubusercontent.com/u/69039161?v=4">
-|✅ 구글 로그인<br> ✅ 닉네임 설정<br> ✅ 파견교 설정<br>✅ 회원 정보 조회<br>✅ 마이페이지 조회<br>✅ 구매/판매내역 조회<br>✅ 토큰 재발급 기능 구현|✅ 양도글 기능 관련 API<br>✅ 댓글 기능 관련 API<br>✅ 대댓글(계층형 구조) <br> 관련 기능 API <br> ✅ S3 이미지 업로드 기능 <br>|✅ 채팅 기능 API <br> ✅ 채팅 송수신 기능 <br>✅ Kafka, MongoDB 환경세팅 <br>✅ 학교 검색 API 서버 구축|✅ 찜하기<br>✅ 찜 해제하기<br>✅ 찜 여부 조회<br>✅ 찜 목록 조회<br>✅ AWS 환경 세팅 <br> ✅ CI/CD <br> (Blue, Green 무중단 배포)
+|✅ 구글 로그인<br> ✅ 닉네임 설정<br> ✅ 파견교 설정<br>✅ 회원 정보 조회<br>✅ 마이페이지 조회<br>✅ 구매/판매내역 조회<br>✅ 토큰 재발급 기능 구현|✅ 양도글 기능 API<br>✅ 댓글 기능 API<br>✅ 대댓글(계층형) 기능 API <br> ✅ S3 이미지 업로드 기능 <br>|✅ 채팅 기능 API <br> ✅ 채팅 송수신 기능 <br>✅ Kafka, MongoDB 환경세팅 <br>✅ 학교 검색 API 서버 구축|✅ 찜하기<br>✅ 찜 해제하기<br>✅ 찜 여부 조회<br>✅ 찜 목록 조회<br>✅ AWS 환경 세팅 <br> ✅ CI/CD <br> (Blue, Green 무중단 배포)
 
 <br>
 
