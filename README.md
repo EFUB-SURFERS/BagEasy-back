@@ -12,33 +12,33 @@ BagEasy의 백엔드 레포지토리
 <br>
 
 ## 🌟 기능 설명
-- 구글 소셜 로그인, 회원가입
-- access token / refresh token을 이용한 사용자 인증 기능
-- 양도글 작성(이미지 업로드)
-- 양도글 수정, 삭제, 조회
-- 양도글 찜하기
-- 거래 완료 처리
-- 양도글별 채팅방 생성
-- 일대일 채팅 기능
+- [x] 구글 소셜 로그인, 회원가입
+- [x] access token / refresh token을 이용한 사용자 인증 기능
+- [x] 양도글 작성(이미지 업로드)
+- [x] 양도글 수정, 삭제, 조회
+- [x] 양도글 찜하기
+- [x] 거래 완료 처리
+- [x] 양도글별 채팅방 생성
+- [x] 일대일 채팅 기능
 
 <br>
 
 ## 👥 팀원 소개
 |김예지|모수지|박가영|조현영|
 |---|---|---|---|
-|<img width="300px" alt="스크린샷 2023-07-25 오전 12 46 14" src="https://avatars.githubusercontent.com/u/121334671?v=4">|<img width="300px" alt="스크린샷 2023-07-25 오전 12 45 48" src="https://avatars.githubusercontent.com/u/108855492?v=4">|<img width="300px" alt="스크린샷 2023-07-25 오전 12 45 37" src="https://avatars.githubusercontent.com/u/87990290?v=4">|<img width="300px" alt="스크린샷 2023-07-25 오전 12 45 37" src="https://avatars.githubusercontent.com/u/69039161?v=4">
-|✅ 구글 로그인<br> ✅ 닉네임 설정<br> ✅ 파견교 설정<br>✅ 회원 정보 조회<br>✅ 마이페이지 조회<br>✅ 구매/판매내역 조회<br>✅ 토큰 재발급 기능 구현|✅ 양도글 기능 API<br>✅ 댓글 기능 API<br>✅ 대댓글(계층형) 기능 API <br> ✅ S3 이미지 업로드 기능 <br>|✅ 채팅 기능 API <br> ✅ 채팅 송수신 기능 <br>✅ Kafka, MongoDB 환경세팅 <br>✅ 학교 검색 API 서버 구축|✅ 찜하기<br>✅ 찜 해제하기<br>✅ 찜 여부 조회<br>✅ 찜 목록 조회<br>✅ AWS 환경 세팅 <br> ✅ CI/CD <br> (Blue, Green 무중단 배포)
+|<img width="300px"  src="https://avatars.githubusercontent.com/u/121334671?v=4">|<img width="300px"  src="https://avatars.githubusercontent.com/u/108855492?v=4">|<img width="300px" src="https://avatars.githubusercontent.com/u/87990290?v=4">|<img width="300px"  src="https://avatars.githubusercontent.com/u/69039161?v=4">
+|구글 로그인<br> 닉네임 설정<br> 파견교 설정<br>회원 정보 조회<br> 마이페이지 조회<br> 구매/판매내역 조회<br>토큰 재발급 기능 구현| 양도글 기능 API <br>댓글 기능<br>대댓글(계층형) 기능 API<br>  S3 이미지 업로드 기능 <br>|채팅 기능 API<br>채팅 송수신 기능 <br>Kafka, MongoDB 환경세팅 <br>학교 검색 API 서버 구축 |찜하기<br> 찜 해제하기<br> 찜 여부 조회<br> 찜 목록 조회<br> AWS 환경 세팅 <br>  CI/CD <br> (Blue/Green 무중단 배포)
 
 <br>
 
 ## 🔗 기술 스택
-- Spring Boot
-- Kafka
-- MySQL, MongoDB, Redis
-- AWS
-- Nginx
-- Docker
-- Github Actions
+- [x] Spring Boot
+- [x] Kafka
+- [x] MySQL, MongoDB, Redis
+- [x] AWS
+- [x] Nginx
+- [x] Docker
+- [x] Github Actions
 
 <br>
 
@@ -48,7 +48,7 @@ BagEasy의 백엔드 레포지토리
 <br>
 
 ## 📗 ERD
-![](https://velog.velcdn.com/images/goinggoing/post/b991a29e-248b-40bc-a577-a1aa7410c232/image.png)
+![](https://velog.velcdn.com/images/goinggoing/post/359d982c-1edb-4d27-b2d3-c407ebfaf5c1/image.png)
 
 <br>
 
