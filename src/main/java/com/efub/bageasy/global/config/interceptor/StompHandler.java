@@ -31,17 +31,17 @@ public class StompHandler implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        String email = verifyAccessToken(getAccessToken(accessor));
+        String nickname = verifyAccessToken(getAccessToken(accessor));
         log.info("StompAccessor = {}", accessor);
-        handleMessage(accessor.getCommand(), accessor, email);
+        handleMessage(accessor.getCommand(), accessor, nickname);
         return message;
     }
 
-    private void handleMessage(StompCommand stompCommand, StompHeaderAccessor accessor, String email){
+    private void handleMessage(StompCommand stompCommand, StompHeaderAccessor accessor, String nickname){
         switch (stompCommand){
             case CONNECT:
                 log.info("websocket connected!!");
-                connectToChatRoom(accessor, email);
+                connectToChatRoom(accessor, nickname);
                 break;
             case SUBSCRIBE:
             case SEND:
@@ -59,15 +59,15 @@ public class StompHandler implements ChannelInterceptor {
             throw new CustomException(ErrorCode.EXPIRED_TOKEN);
         }
 
-        return tokenProvider.getEmailFromToken(accessToken);
+        return tokenProvider.getNicknameFromToken(accessToken);
     }
 
-    private void connectToChatRoom(StompHeaderAccessor accessor, String email){
+    private void connectToChatRoom(StompHeaderAccessor accessor, String nickname){
         Long roomId = getChatRoomId(accessor);
 //
 //        chatRoomService.connectToChatRoom(roomId, email);
 //        chatService.updateCountAllZero(roomId, email);
-        chatService.updateMessage(email, roomId);
+        chatService.updateMessage(nickname, roomId);
     }
 
     private Long getChatRoomId(StompHeaderAccessor accessor){

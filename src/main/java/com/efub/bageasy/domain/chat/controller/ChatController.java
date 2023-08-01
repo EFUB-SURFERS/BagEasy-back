@@ -10,17 +10,20 @@ import com.efub.bageasy.global.config.AuthUser;
 import com.efub.bageasy.global.exception.CustomException;
 import com.efub.bageasy.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class ChatController {
     private final ChatService chatService;
     private final ChatRoomService chatRoomService;
@@ -31,7 +34,7 @@ public class ChatController {
         if(bindingResult.hasErrors()){
             throw new CustomException(ErrorCode.ARGUMENT_NOT_VALID);
         }
-        RoomCreateResponse response = chatService.makeChatRoom(member.getMemberId(), roomCreateRequest);
+        RoomCreateResponse response = chatService.makeChatRoom(member, roomCreateRequest);
         return ResponseEntity.ok(response);
 
     }
@@ -39,8 +42,8 @@ public class ChatController {
 
     /* 메세지 전송 */
     @MessageMapping("/message")
-    public void sendMessage(@Valid Message message, @AuthUser Member member){
-        chatService.sendMessage(message,member);
+    public void sendMessage(@Valid Message message, @Header("Authorization") final String token) throws IOException {
+        chatService.sendMessage(message,token);
     }
 
     /* 채팅 리스트 조회 */

@@ -23,4 +23,9 @@ public class RedisService {
     public String getValues(String key){
         return redisTemplate.opsForValue().get(key);
     }
+
+    @Transactional(readOnly = true)
+    public Boolean checkValues(String key){
+        return redisTemplate.hasKey(key);
+    }
 }
