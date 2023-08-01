@@ -66,7 +66,8 @@ public class AuthService {
         GoogleUser googleUser = getUserInfo(oAuthToken);
 
         String email = googleUser.getEmail();
-        boolean isExistingMember = memberService.checkJoined(email);
+        //boolean isExistingMember = memberService.checkJoined(email);
+        boolean isExistingMember = redisService.checkValues(email);
 
         Member member;
         if (!isExistingMember) {  //가입 처리
