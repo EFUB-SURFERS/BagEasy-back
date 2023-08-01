@@ -31,8 +31,8 @@ public class MemberService {
         return member;
     }
 
-    public boolean checkJoined(String email) {
-        boolean isJoined = memberRepository.existsMemberByEmail(email);
+    public Boolean checkJoined(String email) {
+        Boolean isJoined = memberRepository.existsMemberByEmail(email);
         return isJoined;
     }
 
