@@ -67,8 +67,9 @@ public class ChatService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NO_MEMBER_EXIST));
 
         //이미 존재하는 채팅방
-        if(roomQuerydslRepository.isExistingRoom(member.getMemberId(), post.getMemberId(), post.getPostId()).equals(true)){
-            throw new CustomException(ErrorCode.ROOM_ALREADY_EXIST);
+        Long roomCount = roomQuerydslRepository.countExistingRoom(member.getMemberId(), post.getMemberId(), post.getPostId());
+        if(roomCount!= null){
+            throw new CustomException(ErrorCode.ROOM_ALREADY_EXIST, roomCount.toString() );
         }
 
         //자기자신을 채팅방에 초대하는 경우

@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class CommentRequestDto {
-    private Long memberId;
     private String commentContent;
     private Boolean isSecret;
 

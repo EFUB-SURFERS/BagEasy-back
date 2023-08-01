@@ -19,13 +19,16 @@ import com.efub.bageasy.global.exception.CustomException;
 import com.efub.bageasy.global.exception.ErrorCode;
 import com.efub.bageasy.global.service.S3Service;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -63,8 +66,9 @@ public class PostService {
         return post;
     }
 
+    // 최신 수정 순으로 정렬된 양도글 목록 찾기
     public List<Post> findPostList() {
-        return postRepository.findAll();
+        return postRepository.findAll(Sort.by(Sort.Direction.DESC, "modifiedAt"));
     }
 
 
@@ -143,12 +147,13 @@ public class PostService {
 
     // 멤버 Id 로 양도글 목록 조회
     public List<Post> findPostListBySellerId(Long memberId) {
-        return postRepository.findAllByMemberId(memberId);
+        return postRepository.findAllByMemberIdOrderByModifiedAtDesc(memberId);
     }
+
 
     // 학교 이름으로 양도글 목록 조회
     public List<Post> findPostListBySchoolName(String school){
-        return postRepository.findAllBySchool(school);
+        return postRepository.findAllBySchoolOrderByModifiedAtDesc(school);
     }
 
     public List<Post> findPostListByBuyerId(Long buyerId){
@@ -199,7 +204,7 @@ public class PostService {
         return responseDtoList;
     }
 
-
+    //판매중인 양도글 목록 찾기
     public List<PostResponseDto> findPostListNotSold() {
         List<Post> postList = findPostList();
         List<PostResponseDto> responseDtoList = new ArrayList<>();

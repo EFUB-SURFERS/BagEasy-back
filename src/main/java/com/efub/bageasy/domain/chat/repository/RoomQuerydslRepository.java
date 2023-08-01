@@ -16,14 +16,14 @@ public class RoomQuerydslRepository {
     @PersistenceContext
     private EntityManager em;
 
-    public Boolean isExistingRoom(Long buyerId, Long sellerId, Long postId){
+    public Long countExistingRoom(Long buyerId, Long sellerId, Long postId){
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(em);
 
-        Integer fetchOne = jpaQueryFactory.selectOne()
+        Long fetchOne = jpaQueryFactory.select(room.roomId)
                 .from(room)
                 .where(room.buyerId.eq(buyerId), room.sellerId.eq(sellerId), room.postId.eq(postId))
-                .fetchFirst();
+                .fetchOne();
 
-        return fetchOne != null;
+        return fetchOne;
     }
 }

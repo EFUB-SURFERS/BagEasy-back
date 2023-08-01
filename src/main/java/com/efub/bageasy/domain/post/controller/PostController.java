@@ -45,6 +45,7 @@ public class PostController {
 
         Post post = postService.addPost(member,requestDto,imgPaths);
 
+
         List<Image> imageList = new ArrayList<>();
         for(String imageUrl : imgPaths){
             imageList.add(imageService.findImageByUrl(imageUrl));
@@ -103,6 +104,20 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     public List<PostResponseDto> getPostListBySchool(@RequestBody PostSchoolRequestDto requestDto){
         return postService.findPostListBySchool(requestDto.getSchoolName());
+    }
+
+    //학교로 양도글 리스트 조회 - 판매중인 양도글만 조회
+    @PostMapping("/school/sales")
+    @ResponseStatus(HttpStatus.OK)
+    public List<PostResponseDto> getPostListBySchoolNotSold(@RequestBody PostSchoolRequestDto requestDto){
+        List<PostResponseDto> responseDtoListBySchool = postService.findPostListBySchool(requestDto.getSchoolName());
+        List<PostResponseDto> responseDtoList = new ArrayList<>();
+        for(PostResponseDto responseDto : responseDtoListBySchool){
+            if(responseDto.getIsSold() == false){
+                responseDtoList.add(responseDto);
+            }
+        }
+        return responseDtoList;
     }
 
 
