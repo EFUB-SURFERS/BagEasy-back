@@ -65,7 +65,6 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         try{
             String email = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject();
-            log.info("authenticated email = {}", email);
             Member member = memberRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.NO_MEMBER_EXIST));
             return new UsernamePasswordAuthenticationToken(member, "");
         }catch (ExpiredJwtException e) {
