@@ -6,7 +6,6 @@ import com.efub.bageasy.domain.member.dto.response.TokenDto;
 import com.efub.bageasy.domain.member.repository.MemberRepository;
 import com.efub.bageasy.global.exception.CustomException;
 import com.efub.bageasy.global.exception.ErrorCode;
-import com.efub.bageasy.global.service.RedisService;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +30,8 @@ public class JwtTokenProvider {
     @Value("${jwt.token.key}")
     private String SECRET_KEY;
 
-    private Long accessTokenValidTime = 1000L * 60 * 60 * 24 * 7;  // 7일 - 테스트용
-    private long refreshTokenValidTime = 1000L * 60 * 60 * 24 * 7; // 7일
+    private Long accessTokenValidTime = 1000L * 60 * 60 * 24;  // 1일
+    private long refreshTokenValidTime = 1000L * 60 * 60 * 24 * 30; // 30일
 
     @PostConstruct
     protected void init() {
