@@ -27,7 +27,9 @@ public class MemberController {
 
     @PostMapping("/auth/login")
     public LoginResponseDto login (@RequestBody LoginRequestDto requestDto) throws IOException{
-        return authService.googleLogin(requestDto.getCode());
+        LoginResponseDto loginResponseDto = authService.googleLogin(requestDto.getCode());
+        System.out.println(loginResponseDto.getIsExistingMember()); //log
+        return loginResponseDto;
     }
 
     @PostMapping("/auth/reissue")
