@@ -30,7 +30,7 @@ public class JwtTokenProvider {
     @Value("${jwt.token.key}")
     private String SECRET_KEY;
 
-    private Long accessTokenValidTime = 1000L * 60 * 60 * 24;  // 1일
+    private Long accessTokenValidTime = 1000L * 60;  // 1분
     private long refreshTokenValidTime = 1000L * 60 * 60 * 24 * 30; // 30일
 
     @PostConstruct
