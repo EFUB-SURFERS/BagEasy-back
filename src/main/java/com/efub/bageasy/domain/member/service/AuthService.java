@@ -66,10 +66,7 @@ public class AuthService {
         GoogleUser googleUser = getUserInfo(oAuthToken);
 
         String email = googleUser.getEmail();
-        System.out.println("googleLogin email:" + email); //log
         Boolean isExistingMember = memberService.checkJoined(email);
-        //Boolean isExistingMember = redisService.checkValues(email);
-        System.out.println("isExistingMember:" + isExistingMember); //log
 
         Member member;
         if (!isExistingMember) {  //가입 처리
@@ -79,7 +76,6 @@ public class AuthService {
         }
 
         //앞으로 회원 인가 처리를 위한 jwtToken을 발급한다.
-        //String accessToken = jwtTokenProvider.createToken(member.getEmail());
         TokenDto tokenDto = jwtTokenProvider.createToken(member.getEmail());
 
         //refresh token을 redis에 저장

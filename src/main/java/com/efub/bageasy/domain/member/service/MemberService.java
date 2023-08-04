@@ -34,7 +34,6 @@ public class MemberService {
     public Boolean checkJoined(String email) {
         System.out.println("checkJoined email: " + email);
         Boolean isJoined = memberRepository.existsMemberByEmail(email);
-        System.out.println("isJoined: " + isJoined); //log
         return isJoined;
     }
 
