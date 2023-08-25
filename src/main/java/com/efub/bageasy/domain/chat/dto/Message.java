@@ -34,6 +34,7 @@ public class Message implements Serializable {
 
     private String callbackNickname;
 
+
     @NotNull
     private int type;
 
@@ -59,6 +60,7 @@ public class Message implements Serializable {
                 .contentType(contentType)
                 .content(content)
                 .sentAt(Instant.ofEpochMilli(sentAt).atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime())
+                .isRead(false)
                 .build();
     }
 

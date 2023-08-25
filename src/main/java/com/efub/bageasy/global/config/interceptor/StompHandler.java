@@ -1,8 +1,11 @@
 package com.efub.bageasy.global.config.interceptor;
 
+import com.efub.bageasy.domain.chat.dto.response.ChatRoomRecordDto;
 import com.efub.bageasy.domain.chat.service.ChatRoomService;
 import com.efub.bageasy.domain.chat.service.ChatService;
+import com.efub.bageasy.domain.member.repository.MemberRepository;
 import com.efub.bageasy.domain.member.service.JwtTokenProvider;
+import com.efub.bageasy.domain.member.service.MemberService;
 import com.efub.bageasy.global.exception.CustomException;
 import com.efub.bageasy.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ public class StompHandler implements ChannelInterceptor {
     private final JwtTokenProvider tokenProvider;
     private final ChatRoomService chatRoomService;
     private final ChatService chatService;
+    private final MemberRepository memberRepository;
 
     // 메시지가 실제로 체널로 전송되기 전에 호출
     @Override
@@ -47,6 +51,8 @@ public class StompHandler implements ChannelInterceptor {
             case SEND:
                 verifyAccessToken(getAccessToken(accessor));
                 break;
+            case DISCONNECT:
+                chatService.updateReadOnDisconnect(getChatRoomId(accessor), nickname);
         }
     }
 

@@ -3,11 +3,13 @@ package com.efub.bageasy.domain.chat.domain;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 public class Chat {
@@ -19,4 +21,5 @@ public class Chat {
     private String contentType; // notice 또는 talk
     private String content;
     private LocalDateTime sentAt;
+    private Boolean isRead;
 }

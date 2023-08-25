@@ -52,11 +52,16 @@ public class ChatRoomResponseDto {
     public static class LatestMessage{
         private long sentAt;
         private String content;
+        private Boolean isRead;
+
+        private Boolean isMine;
 
         @Builder
-        public LatestMessage(String content, LocalDateTime sentAt) {
+        public LatestMessage(String content, LocalDateTime sentAt, Boolean isRead, Boolean isMine) {
             this.content = content;
             this.sentAt = sentAt.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
+            this.isRead = isRead;
+            this.isMine = isMine;
         }
     }
 }
