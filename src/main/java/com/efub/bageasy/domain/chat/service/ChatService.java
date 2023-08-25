@@ -154,15 +154,26 @@ public class ChatService {
         String createMemNickname = createMember.getNickname();
         String joinMemNickname = joinMember.getNickname();
 
-        List<ChatResponseDto> chatList = mongoChatRepository.findByRoomId(roomId)
+        List<Chat> chats = mongoChatRepository.findByRoomIdOrderBySentAt(roomId);
+
+        updateReadState(chats, member);
+
+        List<ChatResponseDto> chatList = chats
                 .stream()
                 .map(e -> new ChatResponseDto(e,member.getNickname()))
+                .sorted(Comparator.comparing(ChatResponseDto::getSentAt))
                 .collect(Collectors.toList());
 
         return ChatRoomRecordDto.builder()
                 .chatList(chatList)
                 .nickname(member.getNickname().equals(createMemNickname)?joinMemNickname:createMemNickname)
                 .build();
+    }
+
+    public void updateReadOnDisconnect(Long roomId, String nickname){
+        Member member = memberRepository.findMemberByNickname(nickname).orElseThrow(()-> new CustomException(ErrorCode.NO_MEMBER_EXIST));
+        List<Chat> chats = mongoChatRepository.findByRoomIdOrderBySentAt(roomId);
+        updateReadState(chats, member);
     }
 
     public List<ChatRoomResponseDto> getChatRoomList(Member member) {
@@ -177,6 +188,8 @@ public class ChatService {
                 ChatRoomResponseDto.LatestMessage latestMessage = ChatRoomResponseDto.LatestMessage.builder()
                         .content(chat.getType()==1 ? "(사진)" : chat.getContent())
                         .sentAt(chat.getSentAt())
+                        .isRead(chat.getIsRead())
+                        .isMine(member.getNickname().equals(chat.getNickname()))
                         .build();
                 String createMember = memberRepository.findByMemberId(room.getBuyerId())
                         .orElseThrow(() -> new CustomException(ErrorCode.NO_MEMBER_EXIST)).getNickname();
@@ -200,14 +213,6 @@ public class ChatService {
         return chatRoomList;
     }
 
-
-    // 유저가 입장하면 readCount를 0으로 업데이트
-//    public void updateCountZero(Long roomId, Member member){
-//        Update update = new Update().set("readCount",0);
-//        Query query = new Query(Criteria.where("roomId").is("roomId").and("senderId").ne(member.getMemberId()));
-//        mongoTemplate.updateMulti(query, update, Chat.class);
-//    }
-
     public void updateMessage(String nickname,Long roomId){
         Message message = Message.builder()
                 .contentType("notice")
@@ -219,6 +224,18 @@ public class ChatService {
 
     }
 
+    public void updateReadState(List<Chat> chats, Member member){
+        if(chats.size()!= 0){
+            Chat latestMessage = chats.get(chats.size() - 1);
+
+            //가장 마지막 채팅 발신자가 아닌 사람이 채팅 목록을 조회하면, 가장 마지막 채팅의 isRead 필드를 true로 변경
+            if(!member.getNickname().equals(latestMessage.getNickname())){
+                latestMessage.setIsRead(true);
+            }
+
+            mongoChatRepository.save(latestMessage);
+        }
+    }
 
     @Transactional(readOnly = true)
     public RoomInfoDto getRoomInfo(Long roomId) {
@@ -252,6 +269,4 @@ public class ChatService {
         }
         return message;
     }
-
-
 }
