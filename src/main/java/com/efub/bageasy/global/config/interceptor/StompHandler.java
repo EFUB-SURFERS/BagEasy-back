@@ -10,6 +10,7 @@ import com.efub.bageasy.global.exception.CustomException;
 import com.efub.bageasy.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.messaging.Message;
@@ -18,6 +19,7 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.Objects;
 
@@ -51,8 +53,9 @@ public class StompHandler implements ChannelInterceptor {
             case SEND:
                 verifyAccessToken(getAccessToken(accessor));
                 break;
-            case DISCONNECT:
-                chatService.updateReadOnDisconnect(getChatRoomId(accessor), nickname);
+//            case DISCONNECT:
+//                log.info("websocket disconnected!");
+//                disconnectToChatRoom(accessor, nickname);
         }
     }
 
@@ -70,15 +73,30 @@ public class StompHandler implements ChannelInterceptor {
 
     private void connectToChatRoom(StompHeaderAccessor accessor, String nickname){
         Long roomId = getChatRoomId(accessor);
-//
-//        chatRoomService.connectToChatRoom(roomId, email);
-//        chatService.updateCountAllZero(roomId, email);
+        String sessionId = accessor.getSessionId();
+        chatRoomService.setChatRoomEnterInfo(roomId, nickname, sessionId);
+        chatService.updateReadCountAllZero(roomId, nickname);
         chatService.updateMessage(nickname, roomId);
     }
+
+//    private void disconnectToChatRoom(StompHeaderAccessor accessor, String nickname){
+//        String sessionId = accessor.getSessionId();
+//        chatRoomService.deleteChatRoomEnterInfo(sessionId);
+//    }
 
     private Long getChatRoomId(StompHeaderAccessor accessor){
         return Long.valueOf(Objects.requireNonNull(
                 accessor.getFirstNativeHeader("roomId")));
 
+    }
+
+    @EventListener
+    public void handleWebsocketDisconnectListener(SessionDisconnectEvent event){
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
+        String sessionId = accessor.getSessionId();
+        if(sessionId != null) {
+            log.info("session disconnect! sessionId :"+ sessionId);
+            chatRoomService.deleteChatRoomEnterInfo(sessionId);
+        }
     }
 }

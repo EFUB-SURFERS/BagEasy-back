@@ -16,51 +16,30 @@ public class ChatRoomResponseDto {
     private String createMember;
     private String joinMember;
     private Long postId;
-
     private LatestMessage latestMessage;
-
-//    private Participant participant;
-//    private Integer unReadCount;
-
-//    public void setUnReadCount(Integer unReadCount){
-//        this.unReadCount = unReadCount;
-//    }
-
-    public void setLatestMessage(LatestMessage latestMessage){
-        this.latestMessage = latestMessage;
-    }
+    private Long unReadCount;
 
     @Builder
-    public ChatRoomResponseDto(Room room, String createMember, String joinMember, LatestMessage latestMessage ) {
+    public ChatRoomResponseDto(Room room, String createMember, String joinMember, LatestMessage latestMessage, Long unReadCount ) {
         this.roomId = room.getRoomId();
         this.createMember = createMember;
         this.joinMember = joinMember;
         this.postId = room.getPostId();
         this.latestMessage = latestMessage;
-
+        this.unReadCount = unReadCount;
     }
-
-//    @Getter
-//    @AllArgsConstructor
-//    @ToString
-//    public static class Participant{
-//        private String nickname;
-//    }
 
     @Getter
     @ToString
     public static class LatestMessage{
         private long sentAt;
         private String content;
-        private Boolean isRead;
-
         private Boolean isMine;
 
         @Builder
-        public LatestMessage(String content, LocalDateTime sentAt, Boolean isRead, Boolean isMine) {
+        public LatestMessage(String content, LocalDateTime sentAt,Boolean isMine) {
             this.content = content;
             this.sentAt = sentAt.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
-            this.isRead = isRead;
             this.isMine = isMine;
         }
     }

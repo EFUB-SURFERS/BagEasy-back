@@ -19,6 +19,7 @@ public class ChatResponseDto {
     private String content;
     private long sentAt;
     private boolean isMine; //유저가 보낸 메세지인지
+    private Integer readCount;
 
     public ChatResponseDto(Chat chat, String myNickname) {
         this.id = chat.getId();
@@ -28,6 +29,7 @@ public class ChatResponseDto {
         this.type = chat.getType();
         this.content = chat.getContent();
         this.sentAt = chat.getSentAt().atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
+        this.readCount = chat.getReadCount();
         this.isMine = chat.getNickname().equals(myNickname);
     }
 }
