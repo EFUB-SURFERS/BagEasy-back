@@ -38,10 +38,11 @@ public class Message implements Serializable {
     @NotNull
     private int type;
 
-    public void setSendTimeAndSender(LocalDateTime sentAt, String nickname){
+    private Integer readCount;
+    public void setSendTimeAndSender(LocalDateTime sentAt, String nickname, Integer readCount){
         this.nickname = nickname;
         this.sentAt = sentAt.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
-//        this.readCount = readCount;
+        this.readCount = readCount;
     }
 
     public void setImageUrl(String imgUrl){
@@ -60,7 +61,7 @@ public class Message implements Serializable {
                 .contentType(contentType)
                 .content(content)
                 .sentAt(Instant.ofEpochMilli(sentAt).atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime())
-                .isRead(false)
+                .readCount(readCount)
                 .build();
     }
 

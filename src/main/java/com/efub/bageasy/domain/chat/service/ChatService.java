@@ -25,11 +25,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-
+import javax.annotation.Resource;
+import javax.mail.MessagingException;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -50,9 +56,33 @@ public class ChatService {
     private final KafkaConstants kafkaConstants;
     private final JwtTokenProvider tokenProvider;
     private final AmazonS3Client amazonS3Client;
+    private final ChatRoomService chatRoomService;
+    private final MongoTemplate mongoTemplate;
+    private final MailService mailService;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+
+
+    public static final String ENTER_INFO = "ENTER_INFO"; //채팅방에 입장한 유저의 sessionId와 채팅방 id(roomId)를 맵핑한 정보 저장
+
+//    @Scheduled(cron = "0 0 7 * * *", zone = "Asia/Seoul")
+//    public void sendUnreadChatNotification() throws MessagingException {
+//        List<Room> roomList = roomRepository.findAll();
+//        for(Room room : roomList){
+//            Member buyer = memberRepository.findByMemberId(room.getBuyerId()).orElseThrow(() -> new CustomException(ErrorCode.NO_MEMBER_EXIST));
+//            Member seller = memberRepository.findByMemberId(room.getSellerId()).orElseThrow(() -> new CustomException(ErrorCode.NO_MEMBER_EXIST));
+//            Long buyerUnreadCount =  countUnreadMessages(room.getRoomId(), buyer.getNickname());
+//            Long sellerUnreadCount = countUnreadMessages(room.getRoomId(), seller.getNickname());
+//
+//            log.info("buyerUnreadCount: " + buyerUnreadCount);
+//            log.info("sellerUnreadCount: " + sellerUnreadCount);
+//
+//            if(buyerUnreadCount != 0){
+//                mailService.sendMessage(buyer, seller); //TODO : 메일 발송 기능 (MailService로 분리)
+//            }
+//        }
+//    }
 
     public RoomCreateResponse makeChatRoom(Member member, RoomCreateRequest roomCreateRequest) {
         Post post = postRepository.findPostByPostId(roomCreateRequest.getPostId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
@@ -84,17 +114,14 @@ public class ChatService {
                 .build();
 
         Room savedRoom = roomRepository.save(room);
-//        kafkaProducer.sendChat("kafka_chat", );
         return new RoomCreateResponse(savedRoom);
     }
 
     public void sendMessage(Message message, String token) throws IOException {
-//        boolean isConnectAll = chatRoomService.isAllConnected(message.getRoomId());
-//        Integer readCount = isConnectAll ? 0 : 1;
-
         //메세지 발신자 닉네임과 발신시간 설정
         String nickname = tokenProvider.getNicknameFromToken(token);
-        message.setSendTimeAndSender(LocalDateTime.now(), nickname);
+        int readCount = 2 - (chatRoomService.countMemberEntered(message.getRoomId()));
+        message.setSendTimeAndSender(LocalDateTime.now(), nickname, readCount);
 
         //메세지 타입이 이미지인 경우 (type == 1)
         if (message.getType() == 1) {
@@ -154,9 +181,8 @@ public class ChatService {
         String createMemNickname = createMember.getNickname();
         String joinMemNickname = joinMember.getNickname();
 
+        updateReadCountAllZero(roomId, member.getNickname());
         List<Chat> chats = mongoChatRepository.findByRoomIdOrderBySentAt(roomId);
-
-        updateReadState(chats, member);
 
         List<ChatResponseDto> chatList = chats
                 .stream()
@@ -168,12 +194,6 @@ public class ChatService {
                 .chatList(chatList)
                 .nickname(member.getNickname().equals(createMemNickname)?joinMemNickname:createMemNickname)
                 .build();
-    }
-
-    public void updateReadOnDisconnect(Long roomId, String nickname){
-        Member member = memberRepository.findMemberByNickname(nickname).orElseThrow(()-> new CustomException(ErrorCode.NO_MEMBER_EXIST));
-        List<Chat> chats = mongoChatRepository.findByRoomIdOrderBySentAt(roomId);
-        updateReadState(chats, member);
     }
 
     public List<ChatRoomResponseDto> getChatRoomList(Member member) {
@@ -188,20 +208,20 @@ public class ChatService {
                 ChatRoomResponseDto.LatestMessage latestMessage = ChatRoomResponseDto.LatestMessage.builder()
                         .content(chat.getType()==1 ? "(사진)" : chat.getContent())
                         .sentAt(chat.getSentAt())
-                        .isRead(chat.getIsRead())
                         .isMine(member.getNickname().equals(chat.getNickname()))
                         .build();
                 String createMember = memberRepository.findByMemberId(room.getBuyerId())
                         .orElseThrow(() -> new CustomException(ErrorCode.NO_MEMBER_EXIST)).getNickname();
                 String joinMember = memberRepository.findByMemberId(room.getSellerId())
                         .orElseThrow(() -> new CustomException(ErrorCode.NO_MEMBER_EXIST)).getNickname();
-
+                Long unReadCount = countUnreadMessages(room.getRoomId(), member.getNickname());
 
                 ChatRoomResponseDto chatRoomResponseDto = ChatRoomResponseDto.builder()
                         .room(room)
                         .createMember(createMember)
                         .joinMember(joinMember)
                         .latestMessage(latestMessage)
+                        .unReadCount(unReadCount)
                         .build();
 
                 chatRoomList.add(chatRoomResponseDto);
@@ -224,18 +244,24 @@ public class ChatService {
 
     }
 
-    public void updateReadState(List<Chat> chats, Member member){
-        if(chats.size()!= 0){
-            Chat latestMessage = chats.get(chats.size() - 1);
-
-            //가장 마지막 채팅 발신자가 아닌 사람이 채팅 목록을 조회하면, 가장 마지막 채팅의 isRead 필드를 true로 변경
-            if(!member.getNickname().equals(latestMessage.getNickname())){
-                latestMessage.setIsRead(true);
-            }
-
-            mongoChatRepository.save(latestMessage);
-        }
-    }
+//    public void updateReadState(List<Chat> chats, Member member, Room room){
+//        if(chats.size()!= 0){
+//            Chat latestMessage = chats.get(chats.size() - 1);
+//            /*
+//             가장 마지막 채팅 발신자가 아닌 사람이 채팅 목록을 조회하는 경우
+//             조회하는 사람이 구매자이면 hasUnreadBuyerMessages를 false로
+//             판매자면 hasUnreadSellerMessages를 false로 변경
+//             */
+//            if(!member.getNickname().equals(latestMessage.getNickname())){
+//                if(member.getMemberId().equals(room.getBuyerId())){
+//                    room.updateHasUnreadBuyerMessages();
+//                }else{
+//                    room.updateHasUnreadSellerMessages();
+//                }
+//            }
+//
+//        }
+//    }
 
     @Transactional(readOnly = true)
     public RoomInfoDto getRoomInfo(Long roomId) {
@@ -269,4 +295,23 @@ public class ChatService {
         }
         return message;
     }
+
+    public void updateReadCountAllZero(Long roomId, String nickname){
+        Query query = new Query();
+        Criteria criteria = Criteria.where("roomId").is(roomId)
+                .and("readCount").is(1)
+                .and("nickname").ne(nickname);
+        query.addCriteria(criteria);
+        Update update = new Update().set("readCount", 0);
+        mongoTemplate.updateMulti(query, update, Chat.class);
+    }
+
+    public Long countUnreadMessages(Long roomId, String nickname){
+        Query query= new Query(Criteria.where("roomId").is(roomId)
+                .and("readCount").is(1)
+                .and("nickname").ne(nickname));
+
+        return mongoTemplate.count(query, Chat.class);
+    }
+
 }

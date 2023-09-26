@@ -21,5 +21,5 @@ public class Chat {
     private String contentType; // notice 또는 talk
     private String content;
     private LocalDateTime sentAt;
-    private Boolean isRead;
+    private Integer readCount;
 }

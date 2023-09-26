@@ -17,6 +17,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
@@ -74,5 +75,9 @@ public class ChatController {
         return ResponseEntity.ok(savedMessaage);
     }
 
+//    @GetMapping("/mailtest")
+//    public void sendEmailTest() throws MessagingException {
+//        chatService.sendUnreadChatNotification();
+//    }
 
 }
