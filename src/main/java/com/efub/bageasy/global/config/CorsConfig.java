@@ -16,7 +16,7 @@ public class CorsConfig {
 
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:3000/");
-        config.addAllowedOrigin("https://bageasy.vercel.app/");
+        config.addAllowedOrigin("https://bageasy.net/");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setMaxAge(3600L);
