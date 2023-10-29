@@ -26,8 +26,8 @@ public class PostController {
     private final PostService postService;
     private final S3Service s3Service;
     private final ImageService imageService;
-
     private final MemberService memberService;
+
 
     //게시글 생성
     @PostMapping
@@ -37,22 +37,9 @@ public class PostController {
             @RequestPart(value="dto") PostRequestDto requestDto,
             @RequestPart(value="image") List<MultipartFile> images) throws IOException {
 
-        if(images == null){
-            throw new IOException("이미지가 없습니다.");
-        }
-
-        List<String> imgPaths = s3Service.upload(images);
-
-        Post post = postService.addPost(member,requestDto,imgPaths);
-
-
-        List<Image> imageList = new ArrayList<>();
-        for(String imageUrl : imgPaths){
-            imageList.add(imageService.findImageByUrl(imageUrl));
-        }
-
-        return new PostResponseDto(post,imageList,member);
+        return postService.addPost(member,requestDto,images);
     }
+
 
     // 게시글 수정
     @PutMapping("/{postId}")
@@ -98,6 +85,7 @@ public class PostController {
 
         return responseDtoList;
     }
+
 
     //학교로 양도글 리스트 조회
     @PostMapping("/school")
@@ -148,21 +136,11 @@ public class PostController {
     }
 
 
-
-
     //게시글 삭제
     @DeleteMapping("/{postId}")
     @ResponseStatus(HttpStatus.OK)
     public String deletePost(@AuthUser Member member, @PathVariable Long postId) throws IOException {
-        Post post = postService.findPost(postId);
-        List<Image> imageList = imageService.findPostImage(post);
-
-        for(Image image:imageList){
-            s3Service.deleteImage(image.getImageUrl()); // 이미지 S3 삭제
-        }
-
         postService.deletePost(member,postId); // 게시글 삭제
-
         return "성공적으로 삭제되었습니다!";
     }
 }

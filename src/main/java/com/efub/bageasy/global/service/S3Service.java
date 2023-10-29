@@ -35,7 +35,7 @@ import static com.efub.bageasy.global.exception.ErrorCode.*;
 public class S3Service {
 
     private final AmazonS3Client amazonS3Client;
-    private final AmazonS3 amazonS3;
+    //private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;

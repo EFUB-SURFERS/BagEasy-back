@@ -6,6 +6,8 @@ import com.efub.bageasy.domain.comment.dto.CommentResponseDto;
 import com.efub.bageasy.domain.comment.service.CommentService;
 import com.efub.bageasy.domain.member.domain.Member;
 import com.efub.bageasy.domain.member.service.MemberService;
+import com.efub.bageasy.domain.notice.domain.Notice;
+import com.efub.bageasy.domain.notice.service.NoticeService;
 import com.efub.bageasy.domain.reply.domain.Reply;
 import com.efub.bageasy.domain.reply.dto.ReplyRequestDto;
 import com.efub.bageasy.domain.reply.dto.ReplyResponseDto;
@@ -26,6 +28,7 @@ public class PostCommentReplyController {
     private final CommentService commentService;
     private final ReplyService replyService;
     private final MemberService memberService;
+    private final NoticeService noticeService;
 
     // 양도글의 댓글 생성
     @PostMapping
@@ -35,6 +38,7 @@ public class PostCommentReplyController {
 
         Comment comment = commentService.addComment(member,postId,requestDto);
         String writer = memberService.findNicknameById(comment.getMemberId());
+        noticeService.createCommentNotice(member,comment);
 
         return new CommentResponseDto(comment ,writer);
     }
@@ -48,6 +52,7 @@ public class PostCommentReplyController {
     {
         Reply reply = replyService.addReply(member,commentId,requestDto);
         String writer = memberService.findNicknameById(reply.getMemberId());
+        noticeService.createReplyNotice(member,reply);
 
         return new ReplyResponseDto(reply, writer);
 
