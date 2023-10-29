@@ -25,6 +25,9 @@ public class CommentService {
         Post post = postService.findPost(postId);
         Comment comment = new Comment(member.getMemberId(),requestDto.getIsSecret(),requestDto.getCommentContent(),post.getPostId());
         commentRepository.save(comment);
+
+        /* 댓글 알림 생성 */
+
         return comment;
     }
 

@@ -45,26 +45,34 @@ public class PostService {
     @Autowired
     private final S3Service s3Service;
 
+
+    /* 양도글 생성 */
     @Transactional
-    public Post addPost(Member member, PostRequestDto requestDto , List<String> imgPaths) throws IOException {
+    public PostResponseDto addPost(Member member, PostRequestDto requestDto ,List<MultipartFile> images) throws IOException {
+
+        if(images == null){
+            throw new IOException("이미지가 없습니다.");
+        }
+        List<String> imgPaths = s3Service.upload(images);
+
         String title = requestDto.getPostTitle();
         String content = requestDto.getPostContent();
         Long price = requestDto.getPrice();
         Long memberId=member.getMemberId();
         String school = requestDto.getSchool();
-
         Post post = new Post(title,content,price,memberId,school);
         postRepository.save(post);
 
-        List<String> imgList = new ArrayList<>();
+        //List<String> imgUrlList = new ArrayList<>();
         for(String imgUrl : imgPaths){
             Image image = new Image(imgUrl,post);
             imageRepository.save(image);
-            imgList.add(image.getImageUrl());
+            //imgUrlList.add(image.getImageUrl());
         }
 
-        return post;
+        return makeDto(post);
     }
+
 
     // 최신 수정 순으로 정렬된 양도글 목록 찾기
     public List<Post> findPostList() {
@@ -176,11 +184,22 @@ public class PostService {
 
 
     // 게시글 삭제
-    public void deletePost(Member member, Long postId) {
+    public void deletePost(Member member, Long postId) throws IOException {
         Post post = findPost(postId);
-        heartRepository.findByPostId(postId)
-                        .forEach(heartRepository::delete);
-        postRepository.delete(post);
+        if(post.getMemberId() != member.getMemberId()){
+            throw new CustomException(ErrorCode.INVALID_ACCESS);
+        }
+        else{
+            heartRepository.findByPostId(postId)
+                    .forEach(heartRepository::delete);
+
+            List<Image> imageList = imageService.findPostImage(post);
+            for(Image image:imageList){
+                s3Service.deleteImage(image.getImageUrl()); // 이미지 S3 삭제
+            }
+
+            postRepository.delete(post);
+        }
     }
 
 
