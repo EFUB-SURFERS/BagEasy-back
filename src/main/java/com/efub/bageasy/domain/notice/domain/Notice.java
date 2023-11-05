@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -49,9 +50,12 @@ public class Notice extends BaseTimeEntity {
     @Column(name = "is_checked")
     private Boolean isChecked;
 
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
     /* 댓글 알림 */
     @Builder
-    public Notice(Long contentId, Long postId, Long postWriterId,Long senderId, Long targetId){
+    public Notice(Long contentId, Long postId, Long postWriterId,Long senderId, Long targetId , LocalDateTime createdAt){
         this.noticeType="comment";
         this.contentId = contentId;
         this.postId = postId;
@@ -59,11 +63,12 @@ public class Notice extends BaseTimeEntity {
         this.senderId = senderId;
         this.targetId= targetId;
         this.isChecked= Boolean.valueOf("false");
+        this.createdAt = createdAt;
     }
 
     /* 대댓글 알림 */
     @Builder
-    public Notice(Long contentId, Long postId, Long postWriterId, Long commentId ,Long senderId, Long targetId){
+    public Notice(Long contentId, Long postId, Long postWriterId, Long commentId ,Long senderId, Long targetId ,LocalDateTime createdAt){
         this.noticeType="reply";
         this.contentId = contentId;
         this.postId = postId;
@@ -72,6 +77,7 @@ public class Notice extends BaseTimeEntity {
         this.senderId = senderId;
         this.targetId= targetId;
         this.isChecked= Boolean.valueOf("false");
+        this.createdAt = createdAt;
     }
 
     // 알림 확인

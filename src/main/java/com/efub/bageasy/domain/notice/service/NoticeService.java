@@ -33,7 +33,8 @@ public class NoticeService {
     /* 댓글 알림 생성 */
     public void createCommentNotice(Member member, Comment comment) {
         Post post = postService.findPost(comment.getPostId());
-        Notice notice = new Notice(comment.getCommentId(),comment.getPostId(), post.getMemberId(),member.getMemberId(), post.getMemberId());
+        Notice notice = new Notice(comment.getCommentId(),comment.getPostId(),
+                post.getMemberId(),member.getMemberId(), post.getMemberId() , comment.getCreatedAt());
         noticeRepository.save(notice);
     }
 
@@ -42,7 +43,7 @@ public class NoticeService {
         Comment comment = commentService.findComment(reply.getCommentId());
         Post post = postService.findPost(comment.getPostId());
         Notice notice = new Notice(reply.getReplyId(),comment.getPostId(),post.getMemberId(),comment.getCommentId(),
-                member.getMemberId(), comment.getMemberId());
+                member.getMemberId(), comment.getMemberId(), reply.getCreatedAt());
         noticeRepository.save(notice);
     }
 
@@ -62,9 +63,9 @@ public class NoticeService {
             else {
                 noticeContent = replyService.findReply(notice.getContentId()).getContent();
             }
-            responseDtoList.add(new NoticeResponseDto(notice,postWriterNickName,senderNickName,targetNickName,noticeContent));
+            responseDtoList.add(new NoticeResponseDto(notice,postWriterNickName,senderNickName,
+                    targetNickName,noticeContent , notice.getCreatedAt()));
         }
-
         return responseDtoList;
     }
 
