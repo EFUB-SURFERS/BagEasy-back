@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
@@ -21,9 +23,10 @@ public class NoticeResponseDto {
     private String senderNickname;
     private String targetNickname;
     private Boolean isChecked;
+    private LocalDateTime createdAt;
 
     public NoticeResponseDto(Notice notice , String postWriterNickName,String senderNickname
-            , String targetNickname , String noticeContent ){
+            , String targetNickname , String noticeContent , LocalDateTime createdAt ){
         this.noticeId = notice.getNoticeId();
         this.noticeType = notice.getNoticeType();
         this.noticeContent = noticeContent;
@@ -33,6 +36,7 @@ public class NoticeResponseDto {
         this.senderNickname = senderNickname;
         this.targetNickname = targetNickname;
         this.isChecked = notice.getIsChecked();
+        this.createdAt = createdAt;
 
     }
 }
