@@ -2,7 +2,8 @@
 BagEasy의 백엔드 레포지토리
 
 ## 🧳 서비스 설명
-![image](https://github.com/EFUB-SURFERS/BagEasy-back/assets/87990290/d47824be-3c28-4524-a5ea-2a74e2be9776)
+![Frame 285](https://github.com/EFUB-SURFERS/BagEasy-back/assets/121334671/6d73de20-5845-4b81-9f64-4a9930898563)
+
 
 - [x] `BagEasy`는 교환학생을 위한 짐 양도 서비스입니다.
 - [x] 기존의 짐 양도 플랫폼들은 여러 곳으로 분산되어 있어 사용자로 하여금 불편함을 초래하는 문제점이 있었습니다.
